@@ -287,6 +287,37 @@ class HashiwokakeroCNF:
                 unsatisfied.append(clause)
         return unsatisfied
     
+    def solve_by_brute_force(self):
+        self.gen_bridge_vars()
+        self.no_double_connection()
+        self.degree_constraints()
+        self.add_non_crossing_constraints()
+
+        all_vars = list(range(1, self.var_counter + 1))
+        n = len(all_vars)
+
+        # print(f"→ Brute-force testing {2**n} assignments...")
+
+        for assignment in product([True, False], repeat=n):
+            model = [var if val else -var for var, val in zip(all_vars, assignment)]
+            
+            satisfied = True
+            for clause in self.clauses:
+                if not any(lit in model for lit in clause):
+                    satisfied = False
+                    break
+
+            if not satisfied:
+                continue
+
+            # Kiểm tra liên thông
+            if not self.is_connected(model):
+                continue
+
+            self.display_solution(model)
+            return
+
+        print("Brute-force: No solution found.")
 
 # === DEMO ===
 puzzle = [
@@ -315,15 +346,20 @@ puzzle = [
 #     [0,   0,   0,  1, 0, 0]
 # ]
 
-# puzzle = [
-#     [4, 0, 0, 4],
-#     [0, 0, 0, 0],
-#     [0, 0, 0, 0],
-#     [4, 0, 0, 4],
-# ]
+puzzle2 = [
+    [4, 0, 0, 4],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [4, 0, 0, 4],
+]
 
 solver = HashiwokakeroCNF(puzzle)
 solver.solve()
+
+# test brute-force
+# solver = HashiwokakeroCNF(puzzle2)
+# solver.solve_by_brute_force()
+
 # solver.printVar()
 # solver.print_clauses()
 # print(solver.unsatisfied_clauses([2, 3, 6, 7, 10, 12, 14, 16, 18, 19, 22, 24, 26]))
