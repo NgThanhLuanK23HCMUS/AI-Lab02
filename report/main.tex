@@ -1,0 +1,126 @@
+\documentclass[12pt, a4paper]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage[left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{caption} 
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\usepackage{fancyhdr}
+\usepackage{enumitem} 
+\usepackage{lipsum}
+\usepackage{float}
+\usetikzlibrary{positioning, arrows.meta}
+
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyhead[L]{\nouppercase{\rightmark}}
+\fancyhead[R]{\thepage} 
+\fancyfoot[C]{}
+\renewcommand{\headrulewidth}{0.4pt} 
+\renewcommand{\footrulewidth}{0pt} 
+
+% Trang bia
+\title{
+    \textbf{Ho Chi Minh University of Science} \\
+    \textbf{Department of Information Technology} \\
+    \vspace{0.5cm}
+    \includegraphics[width=0.5\textwidth]{img/logohcmus.png} \\
+    \vspace{1cm}
+    \huge \textbf{Lab01 Report: Searching Algorithms} \\
+    \vspace{1cm}   
+    \Large \textbf{Course: Introduction to Artificial Intelligence} \\
+    \Large \textbf{Instructor: Vo Nhat Tan} \\
+}
+\author{
+    \shortstack[l] {
+        \textbf{23127296 - Nguyen Thanh Luan} \\
+        \textbf{23127302 - Tran Quang Phuc} \\
+        \textbf{23127539 - Nguyen Thanh Tien} \\
+        \textbf{23127543 - Vu Van Vu} \\
+    }
+}
+\date{July, 2025} 
+
+\begin{document}
+
+\maketitle 
+
+% muc luc
+\newpage 
+\tableofcontents 
+
+% introduction
+\newpage 
+
+\section{Introduction}
+\begin{table}[htbp]
+    \centering
+    \caption{Contribution table}
+    \label{tab:contribution}
+    \begin{tabular}{@{}lc@{}} % bo khoang trong
+        \toprule
+        \textbf{Work} & \textbf{Member} \\
+        \midrule
+        Create user interface & Vu Van Vu, Tran Quang Phuc\\
+        Implement maze generator algorithms & Nguyen Thanh Tien, Nguyen Thanh Luan \\
+        Implement BFS, Bi-directional BFS & Nguyen Thanh Luan \\
+        Implement DFS, Bi-directional DFS, Heuristic DFS & Tran Quang Phuc \\
+        Implement UCS, Beam Search & Vu Van Vu \\
+        Implement A*, ... & Nguyen Thanh Tien \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \caption{Requirement completion table}
+    \label{tab:contribution}
+    \begin{tabular}{@{}lc@{}} % bo khoang trong
+        \toprule
+        \textbf{Requirements} & \textbf{Completion level} \\
+        \midrule
+        Friendly user interface & Yes\\
+        Display algorithms visually & Yes\\
+        User interaction & Yes\\
+        Detailed output of algorithms & Yes\\
+        10 searching algorithms implemented & Yes\\
+        Report & Yes\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\section{CNF constraints}
+
+\section{Algorithm Explanation}
+\subsection{Backtracking}
+\subsection{Brute-force}
+\subsection{A*}
+\section{Results}
+\subsection{Test cases}
+\subsection{Results}
+\subsection{Algorithm Comparisons}
+
+\end{document}
