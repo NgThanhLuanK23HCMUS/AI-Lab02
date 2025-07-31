@@ -85,12 +85,13 @@
         \toprule
         \textbf{Work} & \textbf{Member} \\
         \midrule
-        Create user interface & Vu Van Vu, Tran Quang Phuc\\
-        Implement maze generator algorithms & Nguyen Thanh Tien, Nguyen Thanh Luan \\
-        Implement BFS, Bi-directional BFS & Nguyen Thanh Luan \\
-        Implement DFS, Bi-directional DFS, Heuristic DFS & Tran Quang Phuc \\
-        Implement UCS, Beam Search & Vu Van Vu \\
-        Implement A*, ... & Nguyen Thanh Tien \\
+        Formulate CNF constraints & Nguyen Thanh Luan\\
+        Automate CNF generation & Nguyen Thanh Luan \\
+        Design input files & Tran Quang Phuc \\
+        Implement backtracking & Nguyen Thanh Tien \\
+        Implement brute-force & Vu Van Vu  \\
+        Implement A* & Tran Quang Phuc \\
+        Solve using PySat & Nguyen Thanh Luan \\
         \bottomrule
     \end{tabular}
 \end{table}
@@ -103,17 +104,77 @@
         \toprule
         \textbf{Requirements} & \textbf{Completion level} \\
         \midrule
-        Friendly user interface & Yes\\
-        Display algorithms visually & Yes\\
-        User interaction & Yes\\
-        Detailed output of algorithms & Yes\\
-        10 searching algorithms implemented & Yes\\
+        Design at least 10 input files & Yes\\
+        Formulate CNF constraints & Yes \\
+        Automate CNF generation & Yes \\
+        Use PySat to solve & Yes\\
+        Implement backtracking & Yes\\
+        Implement brute-force & Yes\\
+        Implement A* & Yes\\
+        Detailed explanation of algorithms & Yes \\
+        Results and evaluation & Yes \\
         Report & Yes\\
         \bottomrule
     \end{tabular}
 \end{table}
-\section{CNF constraints}
+\section{Problem Introduction}
+Hashiwokakero (also known as Bridges) is a Japanese puzzle. It is played on a rectangular grid. There are islands on the grid. The player can draw bridges between the islands in a straight line. The goal is to make all the islands form a single connected group. The puzzle follows the following rules:
+\begin{itemize}
+    \item They must begin and end at distinct islands, travelling a straight line in between.
+    \item They must not cross any other bridges or islands.
+    \item They may only run orthogonally (i.e. they may not run diagonally).
+    \item At most two bridges connect a pair of islands.
+    \item The number of bridges connected to each island must match the number on that island.
+    \item The bridges must connect the islands into a single connected group.
+\end{itemize}
+\section{Program flow}
+\section{Encode Hashiwokakero to CNF}
+\subsection{Logical Variable Definition}
+To obtain the CNF formula for the Hashiwokakero puzzle, first we introduce a logical variable \\
+\[ x_{i,j,i',j',k} \]
+where 
+\begin{itemize}
+  \item $(i,j)$ and $(i',j')$ is the location of the 2 islands.
+  \item $k$ is the number of bridges between 2 islands.($k=1,2$)
+\end{itemize}
+\subsection{CNF constraints}
+The following constraints are converted to CNF in order to solve the Hashiwokakero puzzle:
+\subsubsection{Bridges must begin and end at distinct islands, travelling in a straight line}
+\begin{itemize}
+    \item The endpoints $(i,j)$ and $(i',j')$ must be distinct: $(i,j) \ne (i',j')$.
+    \item The bridge must lie on a straight line: either the same row or the same column, therefore we can have
+    \[
+    \forall i, j, i', j', k \quad \left( x_{i,j,i',j',k} \rightarrow \left[ (i = i' \land j \ne j') \lor (j = j' \land i \ne i') \right] \right)
+    \]
+    
+\end{itemize}
+\subsubsection{Bridges must not cross any other bridges}
+Two bridges $x_{i_1,j_1,i_1',j_1',k_1}$ and $x_{i_2,j_2,i_2',j_2',k_2}$ intersect if:
 
+\begin{itemize}
+  \item $i_1 = i_1'$, $j_2 = j_2'$ (one runs horizontal, one runs vertical),
+  \item $i_2 < i_1 < i_2'$, and $j_1 < j_2 < j_1'$ (they cross each other),
+  \item $\{i_1,j_1\}, \{i_1',j_1'\} \ne \{i_2,j_2\}, \{i_2',j_2'\}$ (they don't run from same islands).
+\end{itemize}
+\subsubsection{At most two bridges connect a pair of islands}
+The number of bridges is equal or smaller than 2:
+\[
+    \forall i, j, i', j', k \quad ( x_{i,j,i',j',k} \rightarrow 0 \leq k \leq 2)
+    \]
+\subsubsection{The number of bridges connected to each island must match the number on that island}
+Let $B_{i,j}$ be the number written on the island located at row $i$, column $j$. Let the binary variable $x_{i,j,i',j',k} \in \{0,1\}$ represent whether there is a bridge of type $k$ (where $k = 1$ for a single bridge and $k = 2$ for a double bridge) connecting island $(i,j)$ to island $(i',j')$.
+
+The constraint can be written as:
+\[
+\sum_{\substack{i',j',k \\ (i,j,i',j',k) \in D}} k \cdot x_{i,j,i',j',k} = B_{i,j}
+\]
+
+Here, $D$ is the set of all valid pairs of islands $(i',j')$ that can be connected directly to $(i,j)$ (either horizontally or vertically, but not diagonally), and without crossing over another island.
+
+More explicitly:
+\[
+\sum_{\substack{(i',j') \text{ such that } (i = i' \land j \ne j') \\ \text{or } (j = j' \land i \ne i')}} \sum_{k=1}^{2} k \cdot x_{i,j,i',j',k} = B_{i,j}
+\]
 \section{Algorithm Explanation}
 \subsection{Backtracking}
 \subsubsection{Intuition}
