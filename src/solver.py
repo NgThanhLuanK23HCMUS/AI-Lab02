@@ -58,24 +58,15 @@ class HashiwokakeroCNF:
     def degree_constraints(self):
         degree_map = defaultdict(list)
 
-        # Gom các biến liên quan đến từng đảo (i,j)
         for (i1, j1, i2, j2, k), var in self.var_map.items():
             degree_map[(i1, j1)].append((var, k))
             degree_map[(i2, j2)].append((var, k))
 
-        # print("\n>>> Degree Map (biến gán cho từng đảo):")
-        # for key, val in degree_map.items():
-        #     print(f"  Đảo {key}: {val}")
-
         for (i, j), edge_vars in degree_map.items():
             if self.grid[i][j] == 0:
-                continue  # không phải đảo
+                continue
 
             required = int(self.grid[i][j])
-
-            # print(f"\n>>> Xét đảo ({i}, {j}) yêu cầu {required} cầu")
-            # print(f"  Các biến cạnh liên quan: {edge_vars}")
-
             if not edge_vars:
                 print(f"Warning: Island at ({i},{j}) has no edges")
                 self.clauses.append([])  # UNSAT
@@ -83,15 +74,12 @@ class HashiwokakeroCNF:
 
             valid_combinations = []
 
-            # Duyệt tất cả tổ hợp con (1 → n biến), lấy các tổ hợp tổng số cầu đúng yêu cầu
             for r in range(1, len(edge_vars) + 1):
                 for subset in combinations(edge_vars, r):
-                    # Kiểm tra tổng số cầu
                     total = sum(k for _, k in subset)
                     if total != required:
                         continue
 
-                    # Kiểm tra không có 2 đường cùng 1 cặp đảo
                     pair_ids = set()
                     valid = True
                     for var, _ in subset:
@@ -108,32 +96,42 @@ class HashiwokakeroCNF:
                     if valid:
                         valid_combinations.append(subset)
 
-            # print(f"  >> Các tổ hợp hợp lệ:")
-            # for combo in valid_combinations:
-            #     print(f"    {combo}")
-
             if not valid_combinations:
                 print(f"Island at ({i},{j}) has no valid combinations to reach {required} bridges.")
                 self.clauses.append([])  # UNSAT
                 return
 
             aux_vars = []
+            all_vars_involved = set(var for var, _ in edge_vars)
 
             for combo in valid_combinations:
                 aux = self.new_aux_var()
                 aux_vars.append(aux)
-                # aux → (v1 ∧ v2 ∧ ...)
-                self.clauses.append([-aux] + [var for var, _ in combo])
-                # print(f"Thêm mệnh đề (aux → conjunction): {[-aux] + [var for var, _ in combo]}")
 
-                # (v1 ∧ v2 ∧ ...) tuong duong aux
-                for var, _ in combo:
-                    # self.clauses.append([-var, aux])
-                    self.clauses.append([-aux, var])
-                    # print(f"Thêm mệnh đề (var → aux): {[-var, aux]}")
+                combo_vars = [var for var, _ in combo]
 
-            #Ít nhất một tổ hợp đúng
-            self.clauses.append(aux_vars)
+                # (¬v1 ∨ ¬v2 ∨ ... ∨ aux)
+                self.clauses.append([aux] + [-v for v in combo_vars])
+
+                # (aux → vi) <=> (¬aux ∨ vi)
+                for v in combo_vars:
+                    self.clauses.append([-aux, v])
+
+            # Exactly one combination is true
+            self.clauses.append(aux_vars)  # At least one
+            for i in range(len(aux_vars)):
+                for j in range(i + 1, len(aux_vars)):
+                    self.clauses.append([-aux_vars[i], -aux_vars[j]])  # At most one
+
+            # Optional (đảm bảo loại bỏ biến không thuộc tổ hợp nào đã chọn)
+            # Cách làm: mỗi biến chỉ xuất hiện trong tổ hợp có đúng 1 aux → ta ràng buộc ngược lại
+            for var in all_vars_involved:
+                related_auxs = []
+                for idx, combo in enumerate(valid_combinations):
+                    if any(v == var for v, _ in combo):
+                        related_auxs.append(aux_vars[idx])
+                if related_auxs:
+                    self.clauses.append([-var] + related_auxs)
             
     def add_non_crossing_constraints(self):
         for bridge1, var1 in self.var_map.items():
