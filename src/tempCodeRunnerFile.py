@@ -197,6 +197,7 @@ class HashiwokakeroCNF:
             if solver.solve():
                 model = solver.get_model()
                 if self.is_connected(model):
+                    print("hello")
                     self.display_solution(model)
                     self.write_solution_to_file(model,file_path)
                 
@@ -490,16 +491,19 @@ def read_input_file(file_path):
 #     [0,   0,   0,  1, 0, 0]
 # ]
 
-# puzzle2 = [
-#     [2, 0, 2],
-#     [0, 0, 0],
-#     [2, 0, 2],
-# ]
+puzzle2 = [
+    [2, 0, 2],
+    [0, 0, 0],
+    [2, 0, 2],
+]
 
-for i in range(1,8):
-    puzzle = read_input_file(f'Input/input{i}.txt')
-    solver = HashiwokakeroCNF(puzzle)
-    solver.solve(f'Output/output{i}.txt')
+solver = HashiwokakeroCNF(puzzle2)
+solver.solve()
+
+# for i in range(1,8):
+#     puzzle = read_input_file(f'Input/input{i}.txt')
+#     solver = HashiwokakeroCNF(puzzle)
+#     solver.solve(f'Output/output{i}.txt')
     
 
 # solver.solve()
