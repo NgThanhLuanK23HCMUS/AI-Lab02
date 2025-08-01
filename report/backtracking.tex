@@ -1,0 +1,34 @@
+\subsection{Backtracking}
+
+\subsubsection{Intuition}
+Backtracking is a trial-and-error technique for solving constraint problems by incrementally building a solution and checking at each step whether the current partial solution is valid. If at some point the current path cannot lead to a valid solution, the algorithm backtracks to try a different choice. In the context of the Hashiwokakero puzzle, backtracking will try assigning \texttt{True} or \texttt{False} to each bridge variable, partially checking CNF clause satisfaction, and ensuring that the final graph is fully connected.
+
+\subsubsection{Implementation}
+\begin{enumerate}
+  \item \textbf{Generate variables:} Create Boolean variables representing possible bridges between islands.
+
+  \item \textbf{Add logical constraints:}
+  \begin{itemize}
+    \item Ensure no double connections (i.e., a bridge is not added twice in the same direction).
+    \item Enforce the degree constraints — each island must have the exact number of bridge connections as specified.
+    \item Prevent bridges from crossing each other.
+  \end{itemize}
+
+  \item \textbf{Initialize the assignment:} 
+  Create an assignment list to track which variables are currently set to \texttt{True} (bridge exists), \texttt{False} (bridge does not exist), or \texttt{None} (not yet assigned).
+
+  \item \textbf{Partial constraint checking:} 
+  During backtracking, after assigning a value to a variable, check whether all fully-assigned clauses are still satisfied. This prevents exploring invalid branches early.
+
+  \item \textbf{Recursive backtracking:}
+  Try assigning \texttt{True} or \texttt{False} to each variable in order.
+  \begin{itemize}
+    \item If the partial assignment does not violate any constraints, proceed to assign the next variable.
+    \item If a violation is detected, undo the assignment and try the opposite value.
+    \item If all variables are assigned, check if the resulting graph is fully connected.
+  \end{itemize}
+
+  \item \textbf{Solution or failure:}
+  If a complete valid assignment is found and the graph is connected, the solution is displayed.
+  Otherwise, the algorithm concludes that no valid solution exists.
+\end{enumerate}

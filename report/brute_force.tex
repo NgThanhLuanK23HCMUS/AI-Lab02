@@ -1,0 +1,31 @@
+\subsection{Brute-force}
+
+\subsubsection{Intuition}
+The brute-force approach exhaustively tries every possible combination of bridges — meaning, every possible truth assignment (True/False) to the Boolean variables that represent whether a bridge exists or not. For each assignment, it checks whether all the logical constraints are satisfied and whether the resulting graph is fully connected. If a valid assignment is found, the solution is displayed. Otherwise, the algorithm reports that no solution exists.
+
+This approach guarantees correctness but is extremely inefficient for large instances because it explores all $2^n$ possible combinations, where $n$ is the number of variables.
+
+\subsubsection{Implementation}
+
+\begin{enumerate}
+  \item \textbf{Generate variables:} Define Boolean variables representing all possible bridges between islands.
+
+  \item \textbf{Add logical constraints:}
+  \begin{itemize}
+    \item Disallow double bridges between the same pair of islands.
+    \item Ensure that the total number of bridges connected to each island matches its required degree.
+    \item Forbid crossing bridges.
+  \end{itemize}
+
+  \item \textbf{Iterate through all assignments:}
+  Use exhaustive enumeration to try every possible combination of \texttt{True} or \texttt{False} for all variables (i.e., every possible bridge configuration).
+
+  \item \textbf{Constraint checking:}
+  For each assignment, check whether all logical clauses are satisfied. If any clause is unsatisfied, skip to the next assignment.
+
+  \item \textbf{Check connectivity:}
+  If the assignment satisfies all clauses, verify whether the resulting graph is fully connected — all islands must be reachable from one another.
+
+  \item \textbf{Display result or fail:}
+  If a valid and connected configuration is found, display the solution and stop. If all $2^n$ assignments are checked without success, report that no solution exists.
+\end{enumerate}
