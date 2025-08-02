@@ -520,8 +520,8 @@ def to_xx(less100) :
 #         solver.solve(f'Outputs/output-{to_xx(i)}.txt')
 
 def test():
-    for i in range(1,4):
-        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+    for i in range(1,11):
+        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
         model = solver.solve()
@@ -532,8 +532,8 @@ def test():
 
 
 def testAStar():
-    for i in range(1,4):
-        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+    for i in range(1,11):
+        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
         model = solver.solve_by_A_star()
@@ -545,8 +545,8 @@ def testAStar():
 
 
 def testBackTrack():
-    for i in range(1,4):
-        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+    for i in range(1,11):
+        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
         model = solver.solve_by_backtracking()
@@ -557,8 +557,8 @@ def testBackTrack():
     
 
 def testBackTrack():
-    for i in range(1,4):
-        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+    for i in range(1, 11):
+        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
         model = solver.solve_by_backtracking()
@@ -569,8 +569,8 @@ def testBackTrack():
 
 
 def testBruteForce():
-    for i in range(1,4):
-        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+    for i in range(1,11):
+        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
         model = solver.solve_by_brute_force()
@@ -600,7 +600,8 @@ def compare ():
     methods = ['solve', 'solve_by_backtracking', 'solve_by_A_star', 'solve_by_brute_force']
     for method in methods:
         print(method)
-        for i in range(1,11):
+        # only the 5x5 tests
+        for i in range(1,5):
             puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
             solver = HashiwokakeroCNF(puzzle)        
             start_time = time.perf_counter()
@@ -611,8 +612,8 @@ def compare ():
             solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
 
 
-# test()
+test()
 # testBackTrack()
 # testBruteForce()
 # testAStar()
-compare()
+# compare()
