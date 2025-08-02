@@ -3,7 +3,8 @@ from pysat.card import CardEnc
 from itertools import combinations, product,count
 from collections import defaultdict, deque
 import heapq
-
+import os
+import time
 class HashiwokakeroCNF:
     def __init__(self, grid):
         self.grid = grid
@@ -200,10 +201,10 @@ class HashiwokakeroCNF:
                 
                 if self.is_connected(model):
                     self.display_solution(model)
-                    self.write_solution_to_file(model, file_path)
-                    return 
+                    
+                    return model
                 else:
-                    # make sure the same resolution is not returned by glucose3
+                    # exclude invalid model from resolutions
                     blocking_clause = [-lit for lit in model]
                     solver.add_clause(blocking_clause)
             
@@ -318,7 +319,7 @@ class HashiwokakeroCNF:
                 continue
 
             self.display_solution(model)
-            return
+            return model
 
         print("Brute-force: No solution found.")
 
@@ -353,7 +354,7 @@ class HashiwokakeroCNF:
                 model = [v if assignment[v] else -v for v in all_vars]
                 if self.is_connected(model):
                     self.display_solution(model)
-                    return
+                    return model
                 continue
             
             for var in all_vars:
@@ -420,8 +421,17 @@ class HashiwokakeroCNF:
 
         if not backtrack(0):
             print("Backtracking: No solution found.")
-
+        model = model = [v if assignment[v] else -v for v in all_vars if assignment[v] is not None]
+        return model
+    
     def write_solution_to_file(self, model, file_path="Output/output.txt"):
+        
+        
+        if model is None:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write("[]")
+            return
+        
         # Initialize grid with ' ' (temporary placeholder)
         grid = [[' ' for _ in range(self.W)] for _ in range(self.H)]
 
@@ -451,10 +461,10 @@ class HashiwokakeroCNF:
                     grid[i][j] = '0'
 
         # Write to file in requested format
-        with open(file_path, "w", encoding="utf-8") as f:
-            for row in grid:
-                line = "[ " + " , ".join(f'"{cell}"' for cell in row) + " ]\n"
-                f.write(line)
+            with open(file_path, "w", encoding="utf-8") as f:
+                for row in grid:
+                    line = "[ " + " , ".join(f'"{cell}"' for cell in row) + " ]\n"
+                    f.write(line)
 
 def read_input_file(file_path):
     grid = []
@@ -499,11 +509,76 @@ def read_input_file(file_path):
 #     [2, 0, 2],
 # ]
 
-for i in range(1,8):
-    puzzle = read_input_file(f'Input/input{i}.txt')
-    solver = HashiwokakeroCNF(puzzle)
-    solver.solve(f'Output/output{i}.txt')
+def to_xx(less100) :
+    return ("00" + str(less100))[-2:]
+
+
+# def test():
+#     for i in range(1,8):
+#         puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
+#         solver = HashiwokakeroCNF(puzzle)
+#         solver.solve(f'Outputs/output-{to_xx(i)}.txt')
+
+def test():
+    for i in range(1,4):
+        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+        solver = HashiwokakeroCNF(puzzle)        
+        start_time = time.perf_counter()
+        model = solver.solve()
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Execution {i} time: {execution_time:.6f} seconds")
+        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
+
+
+def testAStar():
+    for i in range(1,4):
+        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+        solver = HashiwokakeroCNF(puzzle)        
+        start_time = time.perf_counter()
+        model = solver.solve_by_A_star()
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Execution {i} time: {execution_time:.6f} seconds")
+        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
     
+
+
+def testBackTrack():
+    for i in range(1,4):
+        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+        solver = HashiwokakeroCNF(puzzle)        
+        start_time = time.perf_counter()
+        model = solver.solve_by_backtracking()
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Execution {i} time: {execution_time:.6f} seconds")
+        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
+    
+
+def testBackTrack():
+    for i in range(1,4):
+        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+        solver = HashiwokakeroCNF(puzzle)        
+        start_time = time.perf_counter()
+        model = solver.solve_by_backtracking()
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Execution {i} time: {execution_time:.6f} seconds")
+        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
+
+
+def testBruteForce():
+    for i in range(1,4):
+        puzzle = read_input_file(f'Inputs-debug/input-{to_xx(i)}.txt')
+        solver = HashiwokakeroCNF(puzzle)        
+        start_time = time.perf_counter()
+        model = solver.solve_by_brute_force()
+        end_time = time.perf_counter()
+        execution_time = end_time - start_time
+        print(f"Execution {i} time: {execution_time:.6f} seconds")
+        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
+
 
 # solver.solve()
 
@@ -515,3 +590,14 @@ for i in range(1,8):
 
 # solver.print_clauses()
 # print(solver.unsatisfied_clauses([2, 3, 6, 7, 10, 12, 14, 16, 18, 19, 22, 24, 26]))
+
+##implemented PYSAT
+#test()
+
+## solve with A start
+os.system("rm Outputs/*")
+
+test()
+testBackTrack()
+testBruteForce()
+testAStar()
