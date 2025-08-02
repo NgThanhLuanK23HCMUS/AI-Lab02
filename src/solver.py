@@ -194,17 +194,20 @@ class HashiwokakeroCNF:
             for clause in self.clauses:
                 solver.add_clause(clause)
 
-            if solver.solve():
+            #loop until a connected model found
+            while solver.solve():
                 model = solver.get_model()
+                
                 if self.is_connected(model):
                     self.display_solution(model)
-                    self.write_solution_to_file(model,file_path)
-                
-                # self.display_satisfied_clauses(model)
+                    self.write_solution_to_file(model, file_path)
+                    return 
                 else:
-                    print("Model found but not connected.")
-            else:
-                print("No solution found.")
+                    # make sure the same resolution is not returned by glucose3
+                    blocking_clause = [-lit for lit in model]
+                    solver.add_clause(blocking_clause)
+            
+            print("No connected solution found.")
 
     def display_solution(self, model):
         grid = [[' ' for _ in range(self.W)] for _ in range(self.H)]
