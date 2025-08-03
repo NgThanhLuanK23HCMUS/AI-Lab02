@@ -184,7 +184,7 @@ class HashiwokakeroCNF:
 
         return len(visited) == len(islands)
 
-    def solve(self,file_path="Output/output.txt"):
+    def solve_pysat(self,file_path="Output/output.txt"):
         self.gen_bridge_vars()
         self.no_double_connection()
         self.degree_constraints()
@@ -194,7 +194,6 @@ class HashiwokakeroCNF:
             for clause in self.clauses:
                 solver.add_clause(clause)
 
-            #loop until a connected model found
             while solver.solve():
                 model = solver.get_model()
                 
@@ -203,7 +202,6 @@ class HashiwokakeroCNF:
                     self.write_solution_to_file(model, file_path)
                     return 
                 else:
-                    # make sure the same resolution is not returned by glucose3
                     blocking_clause = [-lit for lit in model]
                     solver.add_clause(blocking_clause)
             
@@ -211,10 +209,6 @@ class HashiwokakeroCNF:
 
     def display_solution(self, model):
         grid = [[' ' for _ in range(self.W)] for _ in range(self.H)]
-        # print("\nCác biến được gán ĐÚNG (True):")
-        # for var in model:
-        #     if var > 0 and var in self.inv_map:
-        #         print(f"var {var}: {self.inv_map[var]}")
         for var in model:
             if var > 0 and var in self.inv_map:
                 i1, j1, i2, j2, k = self.inv_map[var]
@@ -234,61 +228,13 @@ class HashiwokakeroCNF:
         for row in grid:
             print(' '.join(row))
 
-    def printVar(self):
-        for key, var in self.var_map.items():
-            i1, j1, i2, j2, k = key
-            print(f"Var {var}: ({i1},{j1}) -> ({i2},{j2}) with {k} bridge(s)")
-
-    def print_clauses(self):
-        print("Tất cả các mệnh đề (clauses):")
-        for idx, clause in enumerate(self.clauses, 1):
-            print(f"Clause {idx}: {clause}")
-
-    def display_satisfied_clauses(self, model):
-        model_set = set(model)  # để tra nhanh
-        print("\nMệnh đề được thỏa mãn:")
-        for clause in self.clauses:
-            if any(lit in model_set for lit in clause):
-                print(clause)
-
     def to_dimacs_file(self, filename="output.cnf"):
-        """
-        Ghi các mệnh đề CNF trong self.clauses ra file theo định dạng DIMACS chuẩn.
-        """
         with open(filename, "w") as f:
             num_vars = self.var_counter - 1  # Biến bắt đầu từ 1
             num_clauses = len(self.clauses)
             f.write(f"p cnf {num_vars} {num_clauses}\n")
             for clause in self.clauses:
                 f.write(" ".join(str(lit) for lit in clause) + " 0\n")
-
-    def unsatisfied_clauses(self, true_vars):
-        """
-        Trả về danh sách các mệnh đề không được thỏa mãn.
-
-        Args:
-            clauses: List[List[int]] — Danh sách các mệnh đề (CNF), ví dụ: [[1, -2], [-1, 3]]
-            true_vars: List[int] — Danh sách các biến đúng (được gán True), ví dụ: [1, 3]
-
-        Returns:
-            List[List[int]] — Danh sách các mệnh đề không thỏa mãn
-        """
-        true_vars_set = set(true_vars)
-        false_vars_set = set(-v for v in true_vars)
-
-        unsatisfied = []
-        for clause in self.clauses:
-            satisfied = False
-            for literal in clause:
-                if literal in true_vars_set:   # biến dương đúng
-                    satisfied = True
-                    break
-                if literal < 0 and -literal not in true_vars_set:  # biến âm đúng (tức biến dương sai)
-                    satisfied = True
-                    break
-            if not satisfied:
-                unsatisfied.append(clause)
-        return unsatisfied
     
     def solve_by_brute_force(self):
         self.gen_bridge_vars()
@@ -502,7 +448,7 @@ def read_input_file(file_path):
 for i in range(1,8):
     puzzle = read_input_file(f'Input/input{i}.txt')
     solver = HashiwokakeroCNF(puzzle)
-    solver.solve(f'Output/output{i}.txt')
+    solver.solve_pysat(f'Output/output{i}.txt')
     
 
 # solver.solve()
