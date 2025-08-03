@@ -1,16 +1,16 @@
 \subsection{Backtracking}
 
 \subsubsection{Intuition}
-Backtracking is a trial-and-error technique for solving constraint problems by incrementally building a solution and checking at each step whether the current partial solution is valid. If at some point the current path cannot lead to a valid solution, the algorithm backtracks to try a different choice. In the context of the Hashiwokakero puzzle, backtracking will try assigning \texttt{True} or \texttt{False} to each bridge variable, partially checking CNF clause satisfaction, and ensuring that the final graph is fully connected.
+Backtracking is a trial-and-error technique. If at some point the current path cannot lead to a valid solution, the algorithm backtracks to try a different choice.
 
 \subsubsection{Implementation}
 \begin{enumerate}
-  \item \textbf{Generate variables:} Create Boolean variables representing possible bridges between islands.
+  \item \textbf{Generate variables:} Assign Boolean variables to bridges between islands.
 
   \item \textbf{Add logical constraints:}
   \begin{itemize}
-    \item Ensure no double connections (i.e., a bridge is not added twice in the same direction).
-    \item Enforce the degree constraints — each island must have the exact number of bridge connections as specified.
+    \item Ensure no double connections 
+    \item Enforce the degree constraints.
     \item Prevent bridges from crossing each other.
   \end{itemize}
 

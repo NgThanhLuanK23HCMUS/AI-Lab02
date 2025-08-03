@@ -1,9 +1,7 @@
 \subsection{A*}
 
 \subsubsection{Intuition}
-A* is a best-first search algorithm that explores the most promising partial assignments first, guided by a cost function. When solving a CNF formula, each state in the search corresponds to a partial assignment of truth values to the Boolean variables (representing bridge placements). The algorithm proceeds by assigning variables one by one, always choosing the path that seems most likely to lead to a valid, fully satisfying and connected configuration.
-
-A* guarantees that if a solution exists, it will find one with the minimal number of incorrect or unnecessary decisions, provided the heuristic is admissible (does not overestimate the cost to reach a goal).
+A* is a best-first search algorithm that explores the most promising partial assignments first, guided by a cost function.
 
 \subsubsection{Heuristics}
 To guide the search efficiently, A* uses a heuristic function $h(n)$ that estimates the "cost to goal" from a given partial assignment. The total cost function is defined as:
@@ -13,17 +11,17 @@ f(n) = g(n) + h(n)
 where:
 \begin{itemize}
   \item $g(n)$ is the actual number of variables assigned so far (the path cost).
-  \item $h(n)$ is the estimated number of unsatisfied or potentially problematic clauses.
+  \item $h(n)$ is the estimated number of unsatisfied clauses.
 \end{itemize}
 
 Several heuristics can be used:
 
 \begin{itemize}
-  \item \textbf{Clause-based heuristic:} Count the number of clauses that are currently unsatisfied under the partial assignment. This helps the algorithm avoid paths that already violate logical constraints.
+  \item \textbf{Clause-based heuristic:} Count the number of clauses that are currently unsatisfied under the partial assignment.
 
   \item \textbf{Optimistic heuristic:} Count only clauses that are fully assigned and violated. This makes the heuristic admissible and allows for more exploration.
 
-  \item \textbf{Graph-based penalty (optional):} Add a soft penalty for partial solutions that look disconnected or under-connected, steering the algorithm toward globally connected configurations.
+  \item \textbf{Graph-based penalty (optional):} Add a penalty for partial solutions that look disconnected or under-connected, so the algorithm can be more likely to have globally connected configurations.
 \end{itemize}
 
 \subsubsection{Implementation}
