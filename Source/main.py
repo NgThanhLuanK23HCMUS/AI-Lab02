@@ -612,8 +612,8 @@ def compare ():
             solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
 
 
-test()
+# test()
 # testBackTrack()
 # testBruteForce()
 # testAStar()
-# compare()
+compare()
