@@ -16,7 +16,7 @@ class HashiwokakeroCNF:
         self.inv_map = {}  # var -> (i1,j1,i2,j2,k)
         self.clauses = []
 
-    def new_aux_var(self):
+    def new_depend_var(self):
         self.var_counter += 1
         return self.var_counter
 
@@ -71,8 +71,7 @@ class HashiwokakeroCNF:
 
             required = int(self.grid[i][j])
             if not edge_vars:
-                print(f"Warning: Island at ({i},{j}) has no edges")
-                self.clauses.append([])  # UNSAT
+                self.clauses.append([]) 
                 return
 
             valid_combinations = []
@@ -100,30 +99,29 @@ class HashiwokakeroCNF:
                         valid_combinations.append(subset)
 
             if not valid_combinations:
-                print(f"Island at ({i},{j}) has no valid combinations to reach {required} bridges.")
-                self.clauses.append([])  # UNSAT
+                self.clauses.append([]) 
                 return
 
-            aux_vars = []
+            depend_vars = []
             all_vars = set(var for var, _ in edge_vars)
 
             for combo in valid_combinations:
-                aux = self.new_aux_var()
-                aux_vars.append(aux)
+                depend = self.new_depend_var()
+                depend_vars.append(depend)
 
                 combo_vars = set(var for var, _ in combo)
                 not_in_combo = all_vars - combo_vars
 
                 for var in combo_vars:
-                    self.clauses.append([-aux, var])
+                    self.clauses.append([-depend, var])
                 for var in not_in_combo:
-                    self.clauses.append([-aux, -var])
+                    self.clauses.append([-depend, -var])
 
-            # Exactly one valid combination: at least one aux is true, and at most one
-            self.clauses.append(aux_vars)
-            for i in range(len(aux_vars)):
-                for j in range(i + 1, len(aux_vars)):
-                    self.clauses.append([-aux_vars[i], -aux_vars[j]])
+            # Exactly one valid combination: at least one depend is true, and at most one
+            self.clauses.append(depend_vars)
+            for i in range(len(depend_vars)):
+                for j in range(i + 1, len(depend_vars)):
+                    self.clauses.append([-depend_vars[i], -depend_vars[j]])
             
     # add constraint that 2 bridges cross each other
     def add_non_crossing_constraints(self):
@@ -176,7 +174,7 @@ class HashiwokakeroCNF:
 
         return len(visited) == len(islands)
 
-    def solve(self,file_path="Output/output.txt"):
+    def solve_pysat(self,file_path="Output/output.txt"):
         self.gen_bridge_vars()
         self.no_double_connection()
         self.degree_constraints()
@@ -195,11 +193,9 @@ class HashiwokakeroCNF:
                     
                     return model
                 else:
-                    # exclude invalid model from resolutions
                     blocking_clause = [-lit for lit in model]
                     solver.add_clause(blocking_clause)
             
-            print("No connected solution found.")
 
     def display_solution(self, model):
         grid = [[' ' for _ in range(self.W)] for _ in range(self.H)]
@@ -232,7 +228,6 @@ class HashiwokakeroCNF:
         all_vars = list(range(1, self.var_counter + 1))
         n = len(all_vars)
 
-        # print(f"→ Brute-force testing {2**n} assignments...")
 
         for assignment in product([True, False], repeat=n):
             model = [var if val else -var for var, val in zip(all_vars, assignment)]
@@ -407,49 +402,9 @@ def read_input_file(file_path):
             grid.append(row)
     return grid
 
-# === DEMO ===
-# puzzle = [
-#     [0, 2, 0, 5, 0, 0, 2],
-#     [0, 0, 0, 0, 0, 0, 0],
-#     [4, 0, 2, 0, 2, 0, 4],
-#     [0, 0, 0, 0, 0, 0, 0],
-#     [0, 1, 0, 5, 0, 2, 0],
-#     [0, 0, 0, 0, 0, 0, 0],
-#     [4, 0, 0, 0, 0, 0, 3]
-# ]
-
-# puzzle = [
-#     [4, 0, 0, 4, 0, 0],
-#     [0, 0, 0, 0, 0, 0],
-#     [0, 1, 0, 5, 0, 0],
-#     [3, 0, 1, 0, 0, 0],
-#     [0, 0, 0, 0, 0, 0],
-#     [0, 0, 0, 2, 0, 0]
-# ]
-# puzzle = [
-#     [4,  '=', '=', 4, 0, 0],
-#     ['$', 0,   0, '$', 0, 0],
-#     ['$', 1,  '_', 4, 0, 0],
-#     [3,  '_',  1, '|', 0, 0],
-#     [0,   0,   0, '|', 0, 0],
-#     [0,   0,   0,  1, 0, 0]
-# ]
-
-# puzzle2 = [
-#     [2, 0, 2],
-#     [0, 0, 0],
-#     [2, 0, 2],
-# ]
-
 def to_xx(less100) :
     return ("00" + str(less100))[-2:]
 
-
-# def test():
-#     for i in range(1,8):
-#         puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-#         solver = HashiwokakeroCNF(puzzle)
-#         solver.solve(f'Outputs/output-{to_xx(i)}.txt')
 
 def test():
     for i in range(1,11):
@@ -512,28 +467,13 @@ def testBruteForce():
         solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
 
 
-# solver.solve()
-
-# test brute-force
-# solver = HashiwokakeroCNF(puzzle2)
-# solver.solve_by_brute_force()
-
-# solver.printVar()l
-
-# solver.print_clauses()
-# print(solver.unsatisfied_clauses([2, 3, 6, 7, 10, 12, 14, 16, 18, 19, 22, 24, 26]))
-
-##implemented PYSAT
-#test()
-
-
 def compare ():
     os.system("rm Outputs/*")
-    methods = ['solve', 'solve_by_backtracking', 'solve_by_A_star', 'solve_by_brute_force']
+    methods = ['solve_pysat', 'solve_by_backtracking', 'solve_by_A_star', 'solve_by_brute_force']
     for method in methods:
         print(method)
         # only the 5x5 tests
-        for i in range(1,5):
+        for i in range(1,11):
             puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
             solver = HashiwokakeroCNF(puzzle)        
             start_time = time.perf_counter()
