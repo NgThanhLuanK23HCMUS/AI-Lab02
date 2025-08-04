@@ -407,74 +407,11 @@ def to_xx(less100) :
     return ("00" + str(less100))[-2:]
 
 
-def test():
-    for i in range(1,11):
-        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-        solver = HashiwokakeroCNF(puzzle)        
-        start_time = time.perf_counter()
-        model = solver.solve_pysat()
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        print(f"Execution {i} time: {execution_time:.6f} seconds")
-        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
-
-
-def testAStar():
-    for i in range(1,11):
-        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-        solver = HashiwokakeroCNF(puzzle)        
-        start_time = time.perf_counter()
-        model = solver.solve_by_A_star()
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        print(f"Execution {i} time: {execution_time:.6f} seconds")
-        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
-    
-
-
-def testBackTrack():
-    for i in range(1,11):
-        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-        solver = HashiwokakeroCNF(puzzle)        
-        start_time = time.perf_counter()
-        model = solver.solve_by_backtracking()
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        print(f"Execution {i} time: {execution_time:.6f} seconds")
-        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
-    
-
-def testBackTrack():
-    for i in range(1, 11):
-        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-        solver = HashiwokakeroCNF(puzzle)        
-        start_time = time.perf_counter()
-        model = solver.solve_by_backtracking()
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        print(f"Execution {i} time: {execution_time:.6f} seconds")
-        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
-
-
-def testBruteForce():
-    for i in range(1,11):
-        puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
-        solver = HashiwokakeroCNF(puzzle)        
-        start_time = time.perf_counter()
-        model = solver.solve_by_brute_force()
-        end_time = time.perf_counter()
-        execution_time = end_time - start_time
-        print(f"Execution {i} time: {execution_time:.6f} seconds")
-        solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
-
-
-def compare ():
-    os.system("rm Outputs/*")
+def main():
     methods = ['solve_pysat', 'solve_by_backtracking', 'solve_by_A_star', 'solve_by_brute_force']
     for method in methods:
-        print(method)
-        # only the 5x5 tests
         for i in range(1,11):
+            print(method)
             puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
             solver = HashiwokakeroCNF(puzzle)        
             start_time = time.perf_counter()
@@ -485,8 +422,4 @@ def compare ():
             solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
 
 
-test()
-# testBackTrack()
-# testBruteForce()
-# testAStar()
-# compare()
+main()
