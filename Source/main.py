@@ -174,6 +174,7 @@ class HashiwokakeroCNF:
 
         return len(visited) == len(islands)
 
+    
     def solve_pysat(self,file_path="Output/output.txt"):
         self.gen_bridge_vars()
         self.no_double_connection()
@@ -411,7 +412,7 @@ def test():
         puzzle = read_input_file(f'Inputs/input-{to_xx(i)}.txt')
         solver = HashiwokakeroCNF(puzzle)        
         start_time = time.perf_counter()
-        model = solver.solve()
+        model = solver.solve_pysat()
         end_time = time.perf_counter()
         execution_time = end_time - start_time
         print(f"Execution {i} time: {execution_time:.6f} seconds")
@@ -484,8 +485,8 @@ def compare ():
             solver.write_solution_to_file(model , f'Outputs/output-{to_xx(i)}.txt')
 
 
-# test()
+test()
 # testBackTrack()
 # testBruteForce()
 # testAStar()
-compare()
+# compare()
