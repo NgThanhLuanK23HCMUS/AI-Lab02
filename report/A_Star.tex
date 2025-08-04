@@ -14,16 +14,6 @@ where:
   \item $h(n)$ is the estimated number of unsatisfied clauses.
 \end{itemize}
 
-Several heuristics can be used:
-
-\begin{itemize}
-  \item \textbf{Clause-based heuristic:} Count the number of clauses that are currently unsatisfied under the partial assignment.
-
-  \item \textbf{Optimistic heuristic:} Count only clauses that are fully assigned and violated. This makes the heuristic admissible and allows for more exploration.
-
-  \item \textbf{Graph-based penalty (optional):} Add a penalty for partial solutions that look disconnected or under-connected, so the algorithm can be more likely to have globally connected configurations.
-\end{itemize}
-
 \subsubsection{Implementation}
 
 \begin{enumerate}
