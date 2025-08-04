@@ -66,7 +66,7 @@ class HashiwokakeroCNF:
 
         for (i, j), edge_vars in degree_map.items():
             if self.grid[i][j] == 0:
-                continue
+                continue  # không phải đảo
 
             required = int(self.grid[i][j])
             if not edge_vars:
@@ -104,36 +104,25 @@ class HashiwokakeroCNF:
                 return
 
             aux_vars = []
-            all_vars_involved = set(var for var, _ in edge_vars)
+            all_vars = set(var for var, _ in edge_vars)
 
             for combo in valid_combinations:
                 aux = self.new_aux_var()
                 aux_vars.append(aux)
 
-                combo_vars = [var for var, _ in combo]
+                combo_vars = set(var for var, _ in combo)
+                not_in_combo = all_vars - combo_vars
 
-                # (¬v1 ∨ ¬v2 ∨ ... ∨ aux)
-                self.clauses.append([aux] + [-v for v in combo_vars])
+                for var in combo_vars:
+                    self.clauses.append([-aux, var])
+                for var in not_in_combo:
+                    self.clauses.append([-aux, -var])
 
-                # (aux → vi) <=> (¬aux ∨ vi)
-                for v in combo_vars:
-                    self.clauses.append([-aux, v])
-
-            # Exactly one combination is true
-            self.clauses.append(aux_vars)  # At least one
+            # Exactly one valid combination: at least one aux is true, and at most one
+            self.clauses.append(aux_vars)
             for i in range(len(aux_vars)):
                 for j in range(i + 1, len(aux_vars)):
-                    self.clauses.append([-aux_vars[i], -aux_vars[j]])  # At most one
-
-            # Optional (đảm bảo loại bỏ biến không thuộc tổ hợp nào đã chọn)
-            # Cách làm: mỗi biến chỉ xuất hiện trong tổ hợp có đúng 1 aux → ta ràng buộc ngược lại
-            for var in all_vars_involved:
-                related_auxs = []
-                for idx, combo in enumerate(valid_combinations):
-                    if any(v == var for v, _ in combo):
-                        related_auxs.append(aux_vars[idx])
-                if related_auxs:
-                    self.clauses.append([-var] + related_auxs)
+                    self.clauses.append([-aux_vars[i], -aux_vars[j]])
             
     def add_non_crossing_constraints(self):
         for bridge1, var1 in self.var_map.items():
