@@ -5,6 +5,7 @@ from collections import defaultdict, deque
 import heapq
 import os
 import time
+
 class HashiwokakeroCNF:
     def __init__(self, grid):
         self.grid = grid
@@ -66,7 +67,7 @@ class HashiwokakeroCNF:
 
         for (i, j), edge_vars in degree_map.items():
             if self.grid[i][j] == 0:
-                continue  # không phải đảo
+                continue  
 
             required = int(self.grid[i][j])
             if not edge_vars:
@@ -124,6 +125,7 @@ class HashiwokakeroCNF:
                 for j in range(i + 1, len(aux_vars)):
                     self.clauses.append([-aux_vars[i], -aux_vars[j]])
             
+    # add constraint that 2 bridges cross each other
     def add_non_crossing_constraints(self):
         for bridge1, var1 in self.var_map.items():
             (x1, y1, x2, y2, _) = bridge1
@@ -136,7 +138,7 @@ class HashiwokakeroCNF:
                     self.clauses.append([-var1, -var2])
 
     def crosses(self, a1, a2, b1, b2):
-    # Chỉ kiểm tra giao cắt giữa horizontal và vertical
+    # check if 2 bridges(a1, a2) and (b1, b2) crosses
         if self.is_horizontal(a1, a2) and self.is_vertical(b1, b2):
             return (min(a1[0], a2[0]) < b1[0] < max(a1[0], a2[0]) and
                     min(b1[1], b2[1]) < a1[1] < max(b1[1], b2[1]))
@@ -201,10 +203,6 @@ class HashiwokakeroCNF:
 
     def display_solution(self, model):
         grid = [[' ' for _ in range(self.W)] for _ in range(self.H)]
-        # print("\nCác biến được gán ĐÚNG (True):")
-        # for var in model:
-        #     if var > 0 and var in self.inv_map:
-        #         print(f"var {var}: {self.inv_map[var]}")
         for var in model:
             if var > 0 and var in self.inv_map:
                 i1, j1, i2, j2, k = self.inv_map[var]
@@ -224,61 +222,6 @@ class HashiwokakeroCNF:
         for row in grid:
             print(' '.join(row))
 
-    def printVar(self):
-        for key, var in self.var_map.items():
-            i1, j1, i2, j2, k = key
-            print(f"Var {var}: ({i1},{j1}) -> ({i2},{j2}) with {k} bridge(s)")
-
-    def print_clauses(self):
-        print("Tất cả các mệnh đề (clauses):")
-        for idx, clause in enumerate(self.clauses, 1):
-            print(f"Clause {idx}: {clause}")
-
-    def display_satisfied_clauses(self, model):
-        model_set = set(model)  # để tra nhanh
-        print("\nMệnh đề được thỏa mãn:")
-        for clause in self.clauses:
-            if any(lit in model_set for lit in clause):
-                print(clause)
-
-    def to_dimacs_file(self, filename="output.cnf"):
-        """
-        Ghi các mệnh đề CNF trong self.clauses ra file theo định dạng DIMACS chuẩn.
-        """
-        with open(filename, "w") as f:
-            num_vars = self.var_counter - 1  # Biến bắt đầu từ 1
-            num_clauses = len(self.clauses)
-            f.write(f"p cnf {num_vars} {num_clauses}\n")
-            for clause in self.clauses:
-                f.write(" ".join(str(lit) for lit in clause) + " 0\n")
-
-    def unsatisfied_clauses(self, true_vars):
-        """
-        Trả về danh sách các mệnh đề không được thỏa mãn.
-
-        Args:
-            clauses: List[List[int]] — Danh sách các mệnh đề (CNF), ví dụ: [[1, -2], [-1, 3]]
-            true_vars: List[int] — Danh sách các biến đúng (được gán True), ví dụ: [1, 3]
-
-        Returns:
-            List[List[int]] — Danh sách các mệnh đề không thỏa mãn
-        """
-        true_vars_set = set(true_vars)
-        false_vars_set = set(-v for v in true_vars)
-
-        unsatisfied = []
-        for clause in self.clauses:
-            satisfied = False
-            for literal in clause:
-                if literal in true_vars_set:   # biến dương đúng
-                    satisfied = True
-                    break
-                if literal < 0 and -literal not in true_vars_set:  # biến âm đúng (tức biến dương sai)
-                    satisfied = True
-                    break
-            if not satisfied:
-                unsatisfied.append(clause)
-        return unsatisfied
     
     def solve_by_brute_force(self):
         self.gen_bridge_vars()
