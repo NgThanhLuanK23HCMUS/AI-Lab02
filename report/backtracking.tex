@@ -1,7 +1,7 @@
 \subsection{Backtracking}
 
 \subsubsection{Intuition}
-Backtracking is a trial-and-error technique. If at some point the current path cannot lead to a valid solution, the algorithm backtracks to try a different choice.
+Backtracking is a trial-and-error technique. If at some point the current path cannot lead to a valid solution, the algorithm backtracks.
 
 \subsubsection{Implementation}
 \begin{enumerate}
@@ -18,7 +18,7 @@ Backtracking is a trial-and-error technique. If at some point the current path c
   Create an assignment list to track which variables are currently set to \texttt{True} (bridge exists), \texttt{False} (bridge does not exist), or \texttt{None} (not yet assigned).
 
   \item \textbf{Partial constraint checking:} 
-  During backtracking, after assigning a value to a variable, check whether all fully-assigned clauses are still satisfied. This prevents exploring invalid branches early.
+  During backtracking, after assigning a value to a variable, check whether all fully-assigned clauses are still satisfied. This prevents exploring invalid branches.
 
   \item \textbf{Recursive backtracking:}
   Try assigning \texttt{True} or \texttt{False} to each variable in order.
