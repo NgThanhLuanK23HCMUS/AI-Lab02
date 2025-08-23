@@ -1,0 +1,103 @@
+\documentclass[12pt, a4paper]{article} 
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usepackage{float}
+\usetikzlibrary{positioning, arrows.meta}
+\usepackage[left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{caption} 
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+\usetikzlibrary{trees,positioning,calc}
+\usepackage{titlesec}
+\usepackage{fancyvrb} % để dùng verbatim trong bảng
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{fancyvrb} % để dùng verbatim trong bảng
+\usepackage{fvextra} % Quan trọng để Verbatim hoạt động trong bảng
+\usepackage{changepage}
+\usepackage{fontspec} % Dùng fontspec để hỗ trợ Unicode
+\usepackage{polyglossia} % Thay thế babel trong trường hợp dùng Unicode
+\setmainlanguage{vietnamese} % Đặt ngôn ngữ chính
+\setmainfont{Arial} % Font Unicode phổ biến
+
+
+\usetikzlibrary{shapes.geometric}
+\usepackage{enumitem}
+\usepackage{cancel}
+
+\usepackage{float}      % (đặt ở phần đầu file để dùng [H])
+\usepackage{array}
+
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}  % ← dùng leftmark thay vì rightmark
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\renewcommand{\footrulewidth}{0pt} 
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{\arabic{subsection}.\arabic{subsubsection}}
+\titleformat{\subsubsection}[runin] 
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}  
+  [\vspace{0.5em}]             
+\titlespacing*{\subsubsection}{2em}{1ex plus .2ex minus .2ex}{0.5ex}
+\begin{document}
+
+% --- Trang bìa tự thiết kế ---
+\begin{titlepage}
+    \centering
+    \fontsize{16pt}{18pt}\selectfont
+    \textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN} \\
+    \textbf{KHOA CÔNG NGHỆ THÔNG TIN} \\[1cm]
+
+    \includegraphics[width=0.35\textwidth]{logohcmus.png} \\[1cm]
+
+    {\fontsize{24pt}{26pt}\selectfont \textbf{Lab03: Học máy}} \\[1cm]
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{@{}ll}
+            \textbf{Môn:} & Cơ sở trí tuệ nhân tạo \\[13pt]
+            \textbf{Giáo viên hướng dẫn:} & Bùi Tiến Lên \\ 
+                                          & Lê Nhựt Nam \\
+                                          & Võ Nhật Tân\\[13pt]
+            \textbf{Lớp:} & 23CLC03 \\[13pt]
+            \textbf{Họ tên:} & Nguyễn Thành Luân \\[13pt]
+            \textbf{Mã số sinh viên:} & 23127296 \\[13pt]
+        \end{tabular}
+    \end{center}
+
+    \vfill
+
+    {\Large \textbf{Hồ Chí Minh, 30/07/2025}}
+
+\end{titlepage}
+
+
+\tableofcontents  
+\newpage         
+
+
+\section{Giới thiệu}
+\section{Các công trình liên quan}
+\section{Kiến thức nền tảng}
+\section{Phương pháp nghiên cứu}
+\section{Thực nghiệm và Phân tích kết quả}
+\section{Kết luận và định hướng nghiên cứu tương lai}
+\end{document}
