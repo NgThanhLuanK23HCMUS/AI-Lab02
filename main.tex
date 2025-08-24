@@ -28,7 +28,7 @@
 \usepackage{fontspec} % Dùng fontspec để hỗ trợ Unicode
 \usepackage{polyglossia} % Thay thế babel trong trường hợp dùng Unicode
 \setmainlanguage{vietnamese} % Đặt ngôn ngữ chính
-\setmainfont{Arial} % Font Unicode phổ biến
+%\setmainfont{arial} % Font Unicode phổ biến
 
 
 \usetikzlibrary{shapes.geometric}
@@ -92,11 +92,108 @@
 
 \tableofcontents  
 \newpage         
+\section{abstract}
+\paragraph{
+    Giá trị Shapley (Shapley Value, SV) thường đường dùng trong các AI minh bạch (explainable AI, XAI) nhưng  việc xấp xỉ và suy diễn giá trị này vẫn còn gặp nhiều khó khăn. Điều này cho những kết quả và kết luận sai lệch. Do đó, nhóm nghiên cứu nêu lên định lý bất biến của SV, từ đó xây dựng phương pháp tính SV đối với các biến phân loại mà chịu ảnh hưởng nhiều từ bởi công thức mã hóa (encoding). Đối với cây lựa chọn (Decision Tree), nhờ việc tận dụng cấu trúc đặc trưng của cây , nhóm nghiên cứu đưa ra được hai phương pháp xấp xỉ SV với độ chính xác cao hơn các phương pháp khác lâm thời. Hai phương pháp được chạy giả lập và so sánh cùng với các phương pháp lâm thời, điều này chỉ ra lợi thế thực tiễn của phương pháp nhóm nghiên cứu đưa ra. Cuối cùng, Nhóm nghiên cứu đánh giá  các hạn chế của SV với tiêu chí là là một giải thích cục bộ (local explaination). Các pháp trên được xây dựng thành một python package.  
+}
 
-
+%{terms: black box models , bias, local importance, global importance}
 \section{Giới thiệu}
+\paragraph{
+    Xu hướng của việc áp dụng AI vào nghiên cứu khoa học, kinh tế, tài chính, sản xuất ngày càng phát triển mạnh hơn. Nhu cầu suy diễn và đánh giá được các ai (ai model) ngày càng cần thiết. Thực tế rằng các model  ai thường không hề tường minh, những model này gọi là black-box ai và chiếm đại đa số. Nhưng người sử dụng ai models có nhu cầu thiết yếu để có thể xét tính cường độ ảnh hưởng ( tính quan trọng) của biến số đầu vào lên kết quả, cũng như xác định model có sự thiên vị (bias) đối với một hay những biến số. Việc xét  trọng tố toàn cục (global importance) bằng phương pháp tiêu chuẩn (Breiman, 2001) còn rất yếu kém về mảng giải thích các dự đoán cục bộ (local  prediction). Công cuộc tìm kiếm giải pháp khắc phục vấn đề trên vẫn luôn là vấn đề nóng hổi của AI minh bạch (Explainable AI , XAI) 
+}
+\paragraph{
+Một trong những phương pháp diễn giải phổ biến nhất là Shapley Values (SV), một khái niệm bắt nguồn từ Lý thuyết Trò chơi Hợp tác (Cooperative Game Theory). SV cung cấp một cách "công bằng" để đánh giá sự đóng góp của từng biến đầu vào vào một dự đoán cụ thể của mô hình. Mặc dù được sử dụng rộng rãi, việc ước tính và diễn giải SV có thể gặp nhiều thách thức, dẫn đến các suy luận và giải thích không chính xác. Bài báo "Accurate Shapley Values for explaining tree-based models" của Amoukou và cộng sự đã chỉ ra hai vấn đề lớn trong các phương pháp hiện tại:
+}
+
+\begin{itemize}
+\item{Xử lý sai các biến hạng mục (categorical variables): Các phương pháp mã hóa phổ biến (như One-Hot-Encoding) làm thay đổi số lượng biến, và việc tính toán SV bằng cách cộng dồn SV của các biến được mã hóa là không chính xác về mặt lý thuyết và dẫn đến kết quả sai lệch.}
+\item{Độ chệch (bias) của các thuật toán hiện đại: Thuật toán tiên tiến nhất cho các mô hình dựa trên cây, TreeSHAP, có độ chệch cao khi các biến đầu vào có sự phụ thuộc lẫn nhau.
+}
+\end{itemize}
+
+\paragraph{
+Bài viết chỉ ra rằng thuật toán tiên tiến nhất lâm thời TreeSHAP (Lundberg et al., 2020) , có độ bias câo khi các biến số ban đầu phụ thuộc lẫn nhau. Vì thế, họ đã xây dựng một phép tính xấp SV chính xác hơn dựa trên lý thuyết xác suất thống kê. 
+Hơn nữa, khi áp dụng TReeSHAP đối với biến phân loại , bài viết chỉ ra rằng việc TReeSHAP xấp xỉ SV bằng phương pháp lấy tổng SV của các biến phân loại sau chuyển mã là sai trái và dẫn tới nhưng phân tích nhảm nhí. Thay vào đó , những phép xấp xỉ của nhóm đã đem lại sự xấp xỉ chính xác và giảm thiểu bia. Những đóng góp đều đã được tập hợp thành một python package.
+}
+
+\subsection{Report structure outline}
+Báo cáo này được cấu trúc thành sáu chương theo yêu cầu của đề bài. Chương 2 trình bày các công trình liên quan trong lĩnh vực XAI và tính toán SV. Chương 3 cung cấp kiến thức nền tảng về Cây quyết định và Shapley Values. Chương 4 đi sâu vào phương pháp luận được đề xuất trong bài báo. Chương 5 phân tích các thí nghiệm và kết quả đã thực hiện. Cuối cùng, Chương 6 tổng kết các kết quả chính, thảo luận về các hạn chế và đề xuất hướng nghiên cứu trong tương lai
 \section{Các công trình liên quan}
+% ICE https://www.tandfonline.com/doi/full/10.1080/10618600.2014.907095
+Ngoài SV, đã còn nhiều phương pháp tiên phong biểu diễn một model một cách trực quan. Đại đa số các phương pháp này không phụ thuộc vào loại model ai được dùng ( model-agnostic methods). Chúng chạy tốt trên những model ai hiện đại như random forests, gradient boosted tree, cũng như các mô hình học sâu. Một vài cái tên nỗi bật là,   Partial Depen-dence Plot (Friedman, 2001), Individual Conditional Expectation (Goldstein et al., 2015), and local feature attributions such as Local Surrogate (LIME) (Ribeiroet al., 2016). Các phương pháp trên đều đã đóng góp giúp ta hiểu rõ hơn về những dự đoán cục bộ tạo ra bởi model.
+
+\section*{Chương 2: Các công trình liên quan (Related Works)}
+\paragraph{
+Lĩnh vực Trí tuệ Nhân tạo Giải thích được (Explainable AI - XAI) đã và đang phát triển mạnh mẽ nhằm đáp ứng nhu cầu hiểu rõ các mô hình học máy phức tạp. Chương này sẽ điểm qua các nghiên cứu liên quan đến việc diễn giải mô hình, so sánh các phương pháp tiếp cận hiện có, chỉ ra các khoảng trống nghiên cứu và định vị vị trí của công trình được phân tích trong bối cảnh chung.
+}
+
+\subsection*{Tổng quan các Nghiên cứu Liên quan}
+
+Các phương pháp diễn giải mô hình thường được chia thành hai loại: toàn cục (global) và cục bộ (local). Các phương pháp toàn cục, như đo lường tầm quan trọng bằng hoán vị (permutation importance), cung cấp cái nhìn tổng thể về các biến ảnh hưởng đến mô hình~\citep{ref_253}. Tuy nhiên, chúng không đủ để giải thích cho từng dự đoán riêng lẻ~\citep{ref_253}.
+
+Do đó, các phương pháp giải thích cục bộ đã ra đời và thu hút nhiều sự chú ý. Một số phương pháp nền tảng và phổ biến bao gồm:
+\begin{itemize}
+    \item \textbf{Partial Dependence Plot (PDP)}: Trực quan hóa ảnh hưởng trung bình của một hoặc hai biến lên kết quả dự đoán của mô hình~\citep{ref_259}.
+    \item \textbf{Individual Conditional Expectation (ICE)}: Là một phiên bản chi tiết hơn của PDP, hiển thị đường dự đoán cho từng quan sát riêng lẻ khi một biến thay đổi, giúp phát hiện các tương tác không đồng nhất~\citep{ref_259}.
+    \item \textbf{Local Surrogate (LIME)}: Là một phương pháp độc lập với mô hình (model-agnostic), hoạt động bằng cách xây dựng một mô hình đơn giản (ví dụ: hồi quy tuyến tính) để xấp xỉ và giải thích hành vi của mô hình hộp đen phức tạp tại một vùng lân cận của dự đoán cần giải thích~\citep{ref_259}.
+\end{itemize}
+
+Trong bối cảnh đó, \textbf{Shapley Values (SV)}, một khái niệm từ Lý thuyết Trò chơi Hợp tác, đã được điều chỉnh để áp dụng cho XAI nhằm đánh giá sự đóng góp ``công bằng'' của mỗi biến vào một dự đoán cụ thể~\citep{ref_261}. Ý tưởng cốt lõi là phân tích hành vi của mô hình bằng cách loại bỏ các biến và xem xét các ``hàm dự đoán rút gọn'' (reduced predictors)~\citep{ref_264}.
+
+\subsection*{So sánh với các Phương pháp Tiếp cận Hiện có}
+
+Việc tính toán SV đối mặt với thách thức lớn là ước tính kỳ vọng có điều kiện, đặc biệt khi các biến phụ thuộc lẫn nhau~\citep{ref_270}. Các phương pháp hiện có giải quyết vấn đề này theo nhiều cách:
+
+\begin{enumerate}
+    \item \textbf{Các phương pháp tổng quát:} Một số phương pháp cố gắng mô hình hóa trực tiếp phân phối đồng thời của các biến, ví dụ như sử dụng phân phối Gaussian hoặc vine copula, để lấy mẫu từ các phân phối có điều kiện~\citep{ref_371}. Các phương pháp khác thậm chí huấn luyện một mô hình riêng cho mỗi tập hợp con các biến, cho kết quả chính xác nhưng cực kỳ tốn kém về mặt tính toán~\citep{ref_372}.
+
+    \item \textbf{TreeSHAP (Phương pháp chuyên biệt cho mô hình cây):} Đây là phương pháp tiên tiến nhất (state-of-the-art) dành riêng cho các mô hình dựa trên cây~\citep{ref_281, ref_517}. TreeSHAP vượt trội hơn các phương pháp lấy mẫu vì nó có thể tính toán chính xác giá trị SV bằng cách khai thác hiệu quả cấu trúc của cây~\citep{ref_375}. Tuy nhiên, điểm yếu chí mạng của TreeSHAP là nó dựa trên một giả định đơn giản hóa quá mức: nó cho rằng xác suất có điều kiện có thể được phân tách theo đường đi quyết định trong cây (một dạng tính chất Markov)~\citep{ref_397, ref_401}. Giả định này thường bị vi phạm trong thực tế khi các biến có sự tương quan, dẫn đến việc TreeSHAP trở nên \textbf{``có độ chệch cao khi các biến phụ thuộc''}~\citep{ref_281}.
+
+    \item \textbf{Xử lý biến hạng mục:} Một vấn đề khác thường bị bỏ qua là việc xử lý các biến hạng mục sau khi được mã hóa (ví dụ: One-Hot Encoding). Thực tiễn phổ biến là cộng dồn SV của các biến nhị phân được tạo ra để có được SV cho biến hạng mục gốc~\citep{ref_318}. Bài báo chỉ ra rằng cách làm này \textbf{``nhìn chung là không có cơ sở và sai lầm''}~\citep{ref_318}. Hiện tại, đây là cách duy nhất mà TreeSHAP có thể xử lý các biến hạng mục, dẫn đến nguy cơ đưa ra các diễn giải sai lệch~\citep{ref_285}.
+\end{enumerate}
+
+\subsection*{Xác định các Khoảng trống Nghiên cứu}
+
+Từ việc so sánh trên, có thể xác định hai khoảng trống nghiên cứu lớn mà bài báo này nhắm đến để giải quyết:
+\begin{itemize}
+    \item \textbf{Độ chệch của TreeSHAP với dữ liệu phụ thuộc:} Tồn tại một khoảng trống lớn về một phương pháp vừa có thể khai thác hiệu quả cấu trúc của cây như TreeSHAP, vừa phải đủ chính xác khi đối mặt với sự phụ thuộc phổ biến giữa các biến. Giả định của TreeSHAP là quá mạnh và không thực tế, tạo ra nhu cầu về các bộ ước tính kỳ vọng có điều kiện tốt hơn~\citep{ref_402}.
+    \item \textbf{Thiếu phương pháp luận đúng đắn cho biến hạng mục:} Chưa có một phương pháp chuẩn và có cơ sở lý thuyết vững chắc để tính toán SV cho các biến hạng mục đã được mã hóa. Việc cộng dồn SV của các biến con không chỉ sai về mặt lý thuyết mà còn có thể dẫn đến \textbf{``các diễn giải ngụy biện (spurious interpretations)''}~\citep{ref_284}.
+\end{itemize}
+
+\subsection*{Định vị Công trình Nghiên cứu}
+
+Công trình ``Accurate Shapley Values for explaining tree-based models'' định vị mình một cách rõ ràng là một sự \textbf{cải tiến và sửa chữa trực tiếp} cho TreeSHAP, phương pháp giải thích hàng đầu cho các mô hình cây~\citep{ref_282, ref_517}. Thay vì đề xuất một phương pháp hoàn toàn mới, bài báo tập trung vào việc khắc phục những điểm yếu cốt lõi của phương pháp hiện có.
+
+\begin{itemize}
+    \item \textbf{Về vấn đề phụ thuộc:} Bài báo giới thiệu hai bộ ước tính mới (Discrete và Leaf-based) có nền tảng thống kê, được thiết kế để thay thế cho cơ chế ước tính bị chệch của TreeSHAP, giúp tính toán SV chính xác hơn~\citep{ref_282, ref_404}.
+    \item \textbf{Về vấn đề biến hạng mục:} Đây là công trình tiên phong trong việc cung cấp một giải pháp đúng đắn về mặt lý thuyết bằng cách sử dụng khái niệm \textbf{``liên minh'' (coalition)}~\citep{ref_283, ref_294}. Phương pháp này đảm bảo rằng việc mã hóa biến không làm thay đổi hay sai lệch kết quả giải thích.
+\end{itemize}
+
+
 \section{Kiến thức nền tảng}
+\subsection{Decision Tree} cây quyết định là một kiểu mô hình dự báo (predictive model), nghĩa là một ánh xạ từ các quan sát về một sự vật/hiện tượng tới các kết luận về giá trị mục tiêu của sự vật/hiện tượng. Mỗi một nút trong (internal node) tương ứng với một biến; đường nối giữa nó với nút con của nó thể hiện một giá trị cụ thể cho biến đó. Mỗi nút lá đại diện cho giá trị dự đoán của biến mục tiêu, cho trước các giá trị của các biến được biểu diễn bởi đường đi từ nút gốc tới nút lá đó.
+\subsection{Giá Trị Shapely} Trong lí thuyết trò chơi, giá trị Shapley là một giải pháp phân phối cả lợi nhuận và chi phí một cách công bằng cho nhiều người chơi. Dù giá trị Shapley không hoàn hảo, nó đã được chứng minh là một cách tiếp cận khá công bằng.
+\subsection{Biến phân loại ( categorical variables)} hay còn gọi là biến định tính (qualitative variables). Trong ai , ta có hai nhóm chính là biến định tính và biến định lượng {quantiaty variables}. Biến định tính có giá trị thuộc một tập hợp , ví dụ màu sắc $\in$ {đen , nâu , đỏ, cam, vàng, lục, lam, tím , xám , trắng, hoàng kim, bạc}, còn biến định lượng thì sẽ biễu diễn được ở dạng một số cụ thể có thể áp dụng các toán tử cơ bản được.
+\subsection{ Shapley Values} 
+Công thức tổng quát cho Giá trị Shapley của một liên minh đặc trưng `C` được định nghĩa trong bài báo (phương trình 2) như sau:
+
+$$
+\phi_{X_C}(f) \triangleq \frac{1}{p - |C| + 1} \sum_{k=0}^{p-|C|} \frac{1}{\binom{p-|C|}{k}} \sum_{S \in S_k(C)} [f_{S \cup C}(x_{S \cup C}) - f_S(x_S)]
+$$
+
+Trong đó:
+*   `p` là tổng số đặc trưng.
+*   `C` là liên minh các đặc trưng đang được xem xét.
+*   `S` là một tập con các đặc trưng không bao gồm `C`.
+*   `f_S(x_S)` là **hàm dự báo rút gọn (reduced predictor)**, được định nghĩa là giá trị kỳ vọng của đầu ra mô hình khi chỉ biết giá trị của các đặc trưng trong tập `S`:
+    $$
+    f_S(x_S) \triangleq E[f(X) | X_S = x_S]
+    $$
+
+Việc ước tính giá trị kỳ vọng có điều kiện `E[f(X) | X_S = x_S]` là thách thức lớn nhất trong việc tính toán Giá trị Shapley, đặc biệt khi các đặc trưng có sự phụ thuộc lẫn nhau.
+
+
 \section{Phương pháp nghiên cứu}
 
 \section{Thực nghiệm và Phân tích kết quả}
