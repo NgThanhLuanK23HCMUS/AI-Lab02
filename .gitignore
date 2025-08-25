@@ -1,0 +1,10 @@
+.env
+.vscode
+*.log
+*.fls
+*.toc
+*.blg
+*.bbl
+*.aux
+*.xdv
+*.bbl
