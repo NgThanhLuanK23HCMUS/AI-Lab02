@@ -185,4 +185,29 @@ Trong phần này, tác giả tiến hành đánh giá mức độ chính xác v
 
 
 \section{Kết luận và định hướng nghiên cứu tương lai}
+
+\subsection{Kết luận}
+
+Chúng tôi đã chỉ ra rằng việc triển khai hiện tại của Shapley Values (SV) có thể dẫn đến các giải thích thiếu tin cậy do ước lượng bị sai lệch hoặc xử lý không phù hợp với biến phân loại. Để khắc phục vấn đề này, chúng tôi đã đề xuất các bộ ước lượng mới và đưa ra phương pháp đúng để xử lý biến phân loại. 
+
+Kết quả thực nghiệm cho thấy ngay cả trong những mô hình đơn giản, sự khác biệt giữa phương pháp tiên tiến hiện nay (TreeSHAP) và các phương pháp được đề xuất là đáng kể.
+
+Mặc dù có sự quan tâm ngày càng lớn đến lĩnh vực AI đáng tin cậy, tác động của những sai lệch này trong giải thích vẫn chưa được hiểu rõ. Nguyên nhân là do khó khăn trong việc đánh giá định lượng chất lượng của một lời giải thích, vốn phụ thuộc vào phân phối dữ liệu gốc, thứ rất khó để ước lượng. Hơn nữa, quá trình đánh giá thường dễ bị ảnh hưởng bởi thiên kiến xác nhận (confirmation bias).
+
+Chúng tôi cũng cho rằng chất lượng ước lượng không phải là hạn chế duy nhất của SV. Thực tế, chúng tôi chứng minh trong Mệnh đề 5.1 rằng giải thích bằng SV không phải là giải thích cục bộ (local), mà vẫn mang tính toàn cục (global), ngay cả trong mô hình tuyến tính đơn giản.
+
+Mệnh đề 5.1 cho thấy rằng SV không thực sự đo lường mang tính cục bộ, mà thay vào đó vẫn chịu ảnh hưởng toàn cục. Nguyên nhân là khi tính SV cho $X_1$ hoặc $X_2$, ta cũng xem xét các tập con $S$ không chứa $X_5$. Quá trình lấy trung bình và thay đổi dấu của $X_5$ đã vô tình đưa cả mô hình tuyến tính còn lại (không áp dụng cho quan sát hiện tại) vào. 
+
+Phát hiện này đặt ra những thách thức lớn trong việc diễn giải SV và cho thấy các hạn chế thường bị bỏ qua trong thực tiễn do thiếu sự chính xác và hiểu biết về Shapley Values.
+
+\subsection{Định hướng nghiên cứu tương lai}
+
+Trong tương lai, có thể tập trung vào các hướng sau:
+\begin{itemize}
+    \item Phát triển bộ chuẩn đánh giá hệ thống cho chất lượng giải thích trong AI. 
+    \item Nghiên cứu các phương pháp thay thế SV mang lại giải thích thực sự cục bộ. 
+    \item Mở rộng phân tích sang mô hình phi tuyến và không gian chiều cao. 
+    \item Khảo sát tác động tâm lý và thực tiễn của các sai lệch trong giải thích AI khi áp dụng trong các hệ thống thực tế. 
+\end{itemize}
+
 \end{document}
