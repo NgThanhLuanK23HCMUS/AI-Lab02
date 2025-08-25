@@ -23,6 +23,7 @@
 % Tables and Lists
 \usepackage{booktabs}
 \usepackage{longtable}
+\usepackage{changepage} % For adjustwidth environment
 \usepackage{array}
 \usepackage{enumitem}
 
@@ -202,86 +203,107 @@ Việc ước tính giá trị kỳ vọng có điều kiện $E[f(X) | X_S = x_
 \section{Phương pháp nghiên cứu}
 
 \section{Thực nghiệm và Phân tích kết quả}
-\subsection{Cài đặt thực nghiệm và bộ dữ liệu}
 
 Trong phần này, tác giả tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
 
 
-\subsubsection{Thí nghiêm 1: Đánh giá trên mô hình tuyến tính}
-    \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=1em]
-        \item \textbf{Bộ dữ liệu:} 
-          \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
-            \item Bao gồm $n = 10^4$ quan sát $\{(X_i, Y_i)\}_{i=1}^{n}$, trong đó mỗi $X_i$ là vector các đặc trưng của quan sát thứ $i$ và $Y_i$ là giá trị mục tiêu tương ứng.
-            
-            \item $X \in \mathbb{R}^p$ với $p = 5$ đặc trưng, theo phân phối Gaussian đa biến: 
-            \begin{equation*}
-                X \sim \mathcal{N}(0, \Sigma), \quad 
-                \Sigma = \rho J_p + (\rho - 1) I_p, \quad 
-                \rho = 0.7,
-            \end{equation*}
-            trong đó:
-            
-                \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
-                    \item $J_p$ là ma trận $p \times p$ mà tất cả các phần tử đều bằng 1, và $I_p$ là ma trận đơn vị $p \times p$.
-
-                    \item $\Sigma$ là ma trận hiệp phương sai của các đặc trưng.
-            %             - Đường chéo $(\Sigma)_{ii} = 0.4$ là phương sai của từng feature.\\
-            % - Ngoại biên $(\Sigma)_{ij} = 0.7$ là hiệp phương sai (covariance) giữa các feature khác nhau, tạo tương quan dương giữa các đặc trưng.
+\subsection{Thí nghiêm 1: Đánh giá trên mô hình tuyến tính}
+\subsubsection{Bộ dữ liệu}
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
+                    \item Bao gồm $n = 10^4$ quan sát $\{(X_i, Y_i)\}_{i=1}^{n}$, trong đó mỗi $X_i$ là vector các đặc trưng của quan sát thứ $i$ và $Y_i$ là giá trị mục tiêu tương ứng.
+                    
+                    \item $X \in \mathbb{R}^p$ với $p = 5$ đặc trưng, theo phân phối Gaussian đa biến: 
+                    \begin{equation*}
+                        X \sim \mathcal{N}(0, \Sigma), \quad 
+                        \Sigma = \rho J_p + (\rho - 1) I_p, \quad 
+                        \rho = 0.7,
+                    \end{equation*}
+                    trong đó:
+                      \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+                            \item $J_p$ là ma trận $p \times p$ mà tất cả các phần tử đều bằng 1, và $I_p$ là ma trận đơn vị $p \times p$.
+        
+                            \item $\Sigma$ là ma trận hiệp phương sai của các đặc trưng.
+                    %             - Đường chéo $(\Sigma)_{ii} = 0.4$ là phương sai của từng feature.\\
+                    % - Ngoại biên $(\Sigma)_{ij} = 0.7$ là hiệp phương sai (covariance) giữa các feature khác nhau, tạo tương quan dương giữa các đặc trưng.
+                        
+                        \end{itemize}
                 
-                \end{itemize}
-            
-
-            
-            
-            
-            \item Biến mục tiêu:
-            \begin{equation*}
-                Y = B^T X,
-            \end{equation*}
-            với:
-            
-             \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
-                \item Vector $B$ chứa trọng số của từng đặc trưng, xác định mức đóng góp của mỗi đặc trưng vào $Y_i$.
-             \end{itemize}
-           
-            
+                    \item Biến mục tiêu:
+                    \begin{equation*}
+                        Y = B^T X,
+                    \end{equation*}
+                    với:
+                    
+                      \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+                        \item Vector $B$ chứa trọng số của từng đặc trưng, xác định mức đóng góp của mỗi đặc trưng vào $Y_i$.
+                     \end{itemize} 
         \end{itemize}
-
-        \item \textbf{Chỉ số đánh giá và mô hình chuẩn so sánh}
-          \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+\subsubsection{Chỉ số đánh giá và mô hình chuẩn so sánh}
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
                 \item Chỉ số đánh giá
-                    \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                  \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
                         \item Relative Absolute Error (RAE): đo sai khác giữa SV ước lượng và SV thực
                         \item True Positive Rate (TPR): kiểm tra thứ hạng $k$ đặc trưng quan trọng nhất
                     \end{itemize}
                 \item Mô hình chuẩn so sánh
-                    \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                      \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
                         \item TreeSHAP: thuật toán chuẩn cho mô hình cây
                         \item Leaf estimator: sử dụng kỳ vọng có điều kiện trong từng lá cây
                     \end{itemize}
-            \end{itemize}
+        \end{itemize}
 
-            \item \textbf{Phân tích kết quả và giải thích}
+\subsubsection{So sánh hiệu suất và ý nghĩa thống kê}
+\begin{adjustwidth}{2.0em}{0cm}
+Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các phương pháp ước lượng Shapley Value (SV) trên tập dữ liệu trên với $p=5$ đặc trưng. Cụ thể:
+\end{adjustwidth}
             
-            Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các phương pháp ước lượng Shapley Value (SV) trên tập dữ liệu trên với $p=5$ đặc trưng. Cụ thể:
-              \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
-                \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE trung bình = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
+            \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE trung bình = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
+    
+            \item \textbf{Leaf estimator} ($\hat{f}_{\text{Leaf}}$) có RAE = 0.90 và TPR = 94\% (±12\%), chứng tỏ độ chính xác cao hơn TreeSHAP, đặc biệt khi các đặc trưng có tương quan.
+    
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.6\textwidth]{img/restult_experiment_1.png}
+                \caption{R-AE trên 1000 quan sát mới được lấy mẫu từ mô hình tổng hợp, p=5}
+            \end{figure}
+     \end{itemize}
+\subsubsection{Giải thích kết quả}
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
+            \item \textbf{TreeSHAP: }Tác giả giả định rằng khi một đặc trưng phụ thuộc vào các đặc trưng khác (tức nằm trong xích Markov của nó), TreeSHAP sẽ coi tất cả các đặc trưng ngoài tập đang xét là độc lập. Giả định này có nghĩa là bất kỳ ảnh hưởng thực sự nào từ các đặc trưng trong xích Markov nhưng không xuất hiện trên đường đi (path) của quan sát trong cây — tức những feature nằm ngoài path — sẽ bị bỏ qua khi tính giá trị đóng góp. Trong thực tế, các đặc trưng đó vẫn có thể có mối quan hệ hoặc ảnh hưởng đến đặc trưng đang xét, nên việc bỏ qua chúng khiến TreeSHAP không phản ánh đúng mức đóng góp thực tế của đặc trưng, dẫn tới giá trị Shapley bị lệch (bias). Chính bias này giải thích vì sao trên dữ liệu thực nghiệm, TreeSHAP có RAE trung bình cao và TPR thấp hơn so với Leaf estimator.
+    
+            \item \textbf{Leaf estimator: }phương pháp này tính giá trị kỳ vọng có điều kiện của từng đặc trưng trong mỗi lá của cây, dựa trực tiếp trên phân phối thực tế của các đặc trưng trong lá. Khác với TreeSHAP, Leaf estimator không giả định các đặc trưng ngoài tập đang xét là độc lập, nên vẫn phản ánh chính xác mức đóng góp của các đặc trưng ngay cả khi chúng phụ thuộc lẫn nhau hoặc dữ liệu không liên tục. Nhờ đó, Leaf estimator ít bị lệch hơn (bias thấp hơn) và các giá trị Shapley gần hơn với giá trị thực, giúp việc giải thích mô hình trở nên đáng tin cậy hơn.
+    
+        \end{itemize}   
 
-                \item \textbf{Leaf estimator} ($\hat{f}_{\text{Leaf}}$) có RAE = 0.90 và TPR = 94\% (±12\%), chứng tỏ độ chính xác cao hơn TreeSHAP, đặc biệt khi các đặc trưng có tương quan.  
-              \end{itemize}
-            
-            
+\subsection{Thí nghiệm 2: Đánh giá trên mô hình có các đặc trưng phụ thuộc}
+\subsubsection{Bộ dữ liệu}
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
+            \item Sử dụng lại mô hình giả lập từ Experiment 1.
+            \item Tuy nhiên, tác giả sẽ thay đổi tương quan giữa các đặc trưng ρ ($0$ đến $0.99$), đại diện cho mức độ phụ thuộc ngày càng tăng giữa các đặc trưng.
+        \end{itemize}
+\subsubsection{Chỉ số đánh giá và mô hình chuẩn so sánh}
+        \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
+            \item Tác giả cũng sử dụng các chỉ số RAE và TPR để đánh giá, đồng thời lựa chọn TreeSHAP và Leaf estimator làm các mô hình so sánh.
+        \end{itemize}
 
-            
-           \textbf{Giải thích:} 
+\subsubsection{So sánh hiệu suất và ý nghĩa thống kê}
+\begin{adjustwidth}{2.0em}{0cm}
+Từ hình 5 cho thấy, khi độ tương quan giữa các đặc trưng tăng từ 0 đến 0.99, hiệu suất của hai bộ ước lượng (estimators) thay đổi đáng kể. Ở mức tương quan thấp (ρ $\approx$ 0), TreeSHAP hoạt động tốt, có giá trị R-MAE thấp, cho thấy dự đoán giải thích gần đúng với giá trị thực. Tuy nhiên, khi ρ tăng, nghĩa là các đặc trưng càng phụ thuộc lẫn nhau, Leaf estimator liên tục duy trì R-MAE thấp hơn TreeSHAP, cho thấy Leaf estimator ổn định hơn trong điều kiện đặc trưng phụ thuộc. Điều này cho thấy TreeSHAP dễ bị giảm hiệu suất khi giả định độc lập giữa các đặc trưng bị vi phạm. Về ý nghĩa thống kê, sự khác biệt giữa hai bộ ước lượng trở nên rõ ràng ở mức tương quan cao, cho thấy Leaf estimator đáng tin cậy hơn trong các tập dữ liệu có tính phụ thuộc mạnh giữa các đặc trưng.
 
-             TreeShap: Do tác giả đang giả định là khi một feature phụ thuộc vào các feature khác - tức là feature đó nằm trong xích Markov của nó - TreeSHAP vẫn giả định rằng các feature ngoài tập feature đang xét là độc lập. Giả định này đồng nghĩa với việc mọi ảnh hưởng thực sự từ các feature trong xích Markov nhưng không xuất hiện trên path của cây đều bị bỏ qua khi tính giá trị đóng góp.
-                        
-            Ngược lại, Leaf estimator tính giá trị kỳ vọng có điều kiện của feature trong từng leaf, dựa trực tiếp trên phân phối thực tế của feature trong lá đó. Do đó, Leaf estimator phản ánh chính xác mức đóng góp của feature ngay cả khi có sự phụ thuộc giữa các feature hoặc dữ liệu không liên tục. Kết quả là Leaf estimator ít bị bias hơn và cho các giá trị Shapley gần với true SV hơn, giúp giải thích mô hình đáng tin cậy hơn.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/restult_experiment_2.png}
+    \caption{R-AE của các ước lượng khác nhau được tính với hệ số tương quan 
+    $\rho \in [0, 0.99]$.}
+\end{figure}
+\end{adjustwidth}
 
+\subsubsection{Giải thích kết quả}
+\begin{adjustwidth}{2.0em}{0cm}
 
-        
-    \end{itemize}
+Kết quả này có thể giải thích bằng cách xem xét giả định của TreeSHAP. TreeSHAP xem rằng các đặc trưng ngoài tập đặc trưng đang xét trên đường đi của cây là độc lập, do đó khi các đặc trưng thực sự phụ thuộc lẫn nhau (ρ cao), các ảnh hưởng từ đặc trưng bị bỏ qua, dẫn đến R-MAE tăng. Ngược lại, Leaf estimator dựa trên phân phối thực tế của các giá trị lá cây và không yêu cầu giả định độc lập, nên vẫn giữ được hiệu quả khi các đặc trưng phụ thuộc lẫn nhau. Do đó, trong các mô hình mà các đặc trưng có sự tương quan cao, Leaf estimator thể hiện độ chính xác giải thích tốt hơn TreeSHAP.
+\end{adjustwidth}
 
 
 
@@ -311,9 +333,5 @@ Trong tương lai, có thể tập trung vào các hướng sau:
     \item Mở rộng phân tích sang mô hình phi tuyến và không gian chiều cao. 
     \item Khảo sát tác động tâm lý và thực tiễn của các sai lệch trong giải thích AI khi áp dụng trong các hệ thống thực tế. 
 \end{itemize}
-
-\end{document}
-\bibliographystyle{plainnat}
-\bibliography{references}  
 
 \end{document}
