@@ -259,6 +259,187 @@ Cho $f$ và hàm tái tham số hóa của nó $\Tilde{f} = f \circ \boldsymbol{
 \end{proposition}
 Công thức này chỉ ra rằng thông tin được cung cấp bởi mỗi đặc trưng $X_i$ trong phần giải thích là độc lập với bất kỳ phương pháp mã hóa nào, như đã đề cập bởi \cite{Owen2017}. Giá trị SV chủ yếu phụ thuộc vào cấu trúc phụ thuộc của các đặc trưng. Do đó, Giá trị Shapley của một đặc trưng $X_i$ vẫn giữ nguyên sau khi biến đổi vi phôi $\varphi$, ta có $\phi_{X_i}(f) = \phi_{U_i}(\tilde{f})$. Giả sử một biến $X_i$ được tách thành $C$ biến tương quan $\Tilde{X}_C = (X_i)_{i \in C}$, ví dụ, bằng cách rời rạc hóa một đặc trưng. Vì $X_i$ và $\Tilde{X}_C$ mang cùng một thông tin, chúng ta có thể đặt câu hỏi liệu SV của nhóm đặc trưng $\Tilde{X}_C$ có bằng SV của $X_i$ hay không.
 
+<<<<<<< HEAD
+=======
+\subsection{Chứng minh tính bất biến của SV đối với các biến phân loại được mã hóa}
+
+Mặc dù có nhiều phương pháp mã hóa cho một biến phân loại $Z$ với các phương thức $\{1,\dots,K\}$, nhóm nghiên cứu tập trung vào hai phương pháp phổ biến: One-Hot-Encoding (OHE) và Dummy Encoding (DE). Các phương pháp này giới thiệu các biến chỉ báo $Z_k$ sao cho $Z_{k}=1$ nếu $Z=k$, và bằng $0$ trong trường hợp ngược lại.
+Trái ngược với trường hợp biến liên tục, việc giới thiệu các biến chỉ báo làm thay đổi số lượng "người chơi" trong trò chơi được xác định để tính toán Giá trị Shapley. Sự thay đổi này có những hệ quả quan trọng đối với việc tính toán SV cho tất cả các biến trong mô hình. Do đó, thực tiễn được áp dụng rộng rãi là cộng các SV của các biến chỉ báo $Z_k$ để tính SV của $Z$ nói chung là không có cơ sở và sai lầm. Để hưởng lợi từ một kết quả bất biến tương tự như Mệnh đề \ref{prop:reparam}, chúng ta cần xử lý liên minh của các chỉ báo và sử dụng biểu thức tổng quát của SV được giới thiệu trong phương trình \ref{eq:classic_shapley_game}.
+
+
+\begin{proposition}\label{prop:SV_CoalQualitative_sup}
+Cho một hàm dự báo $f:\mathbb{R}\times\left\{ 1,\dots,K\right\} \longrightarrow\mathbb{R}$ và hàm tái tham số hóa của nó $\tilde{f}$ sử dụng Dummy Encoding $\tilde{f}:\mathbb{R}\times\left\{ 0,1\right\}^{K-1} \longrightarrow\mathbb{R}$ sao cho $f(X,Z)\triangleq\tilde{f}(X,Z_{1},\dots,Z_{K-1})$, ta có:
+ \begin{equation}
+\left\{ \begin{array}{lll}
+ \phi_{Z_{1:K-1}}(\tilde{f}) & = & \phi_{Z}(f)\\
+ \phi_{X}(\tilde{f}; Z_{1:K-1}) & = & \phi_{X}(f),
+\end{array}\right.\label{eq:Shapley_CoalitionDummies}
+\end{equation}
+\end{proposition}
+nhóm nghiên cứu nhắc lại biểu thức của SV cho hai biến $X\in\mathbb{R}$ và $Z\in\left\{ 1,\dots,K\right\}$. Vai trò của các biến $X, Z$ là đối xứng, và bản chất phân loại hay định lượng của biến không có bất kỳ tác động nào đến việc tính toán SV, như được trình bày dưới đây. Hãy xem xét một quan sát $\x = (x, z)$, khi đó:
+\begin{eqnarray}
+\left\{ \begin{array}{ll}
+\phi_{X}(f)= & \frac{1}{2}\left(E\left[f(X,Y)\vert X=x\right]-E\left[f\left(X,Z\right)\right]\right)+\frac{1}{2}\left(f\left(x,z\right)-E\left[f\left(X,Z\right)\vert Z=z\right]\right)\\
+\phi_{Z}(f)= & \frac{1}{2}\left(E\left[f(X,Y)\vert Z=z\right]-E\left[f\left(X,Z\right)\right]\right)+\frac{1}{2}\left(f\left(x,z\right)-E\left[f\left(X,Z\right)\vert X=x\right]\right)
+\end{array}\right.
+\label{eq:ShapleyValue_XY_Indiv}
+\end{eqnarray}
+
+\begin{proof}
+Hãy xem xét phương pháp mã hóa Dummy Encoding (DE) $\varphi:z\mapsto(z_{1},\dots,z_{K-1})$ mà không làm mất tính tổng quát, khi đó quan sát $\x = (x, z)$ được tái tham số hóa thành $\Tilde{\x} = (x, z_{1:K-1})$, và theo cách xây dựng của $\varphi$, $\exists !z\in \{1,\dots,K\}$ sao cho $\varphi(z)=z_{1:K-1}$. Bằng cách lấy liên minh của $Z_{1:K-1}$ hoặc coi chúng như một biến duy nhất, ta có:
+\begin{multline}
+    \phi_{Z_{1:K-1}}(\tilde{f})=\frac{1}{2}\left( E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert Z_{1:K-1}=z_{1:K-1}\right]-E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert\emptyset\right] \right) \\
+    +\frac{1}{2} \left( E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert X=x,Z_{1:K-1}=y_{1:K-1}\right]-E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert X=x\right]\right).
+\end{multline}
+
+Sử dụng thực tế rằng:
+\begin{align*}
+ E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert Z_{1:K-1}=z_{1:K-1}\right] & =\int\tilde{f}(x,z_{1:K-1})dP(x\vert z_{1:K-1})\\
+ & =\int\tilde{f}(x,z_{1:K-1})\frac{dP(x,z_{1:K-1})}{P(z_{1:K-1})}\\
+ & =\int\tilde{f}(x,\varphi(z))\frac{dP(x,\varphi(z))}{P(\varphi(z))}\\
+ & =\int f(x,z)\frac{dP(x,z)}{P(z)} \\
+ & = E\left[f(X,Z)\vert Z=z\right]
+\end{align*} 
+chúng ta có:
+\begin{align*}
+ E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert Z_{1:K-1}=z_{1:K-1}\right]-E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert\emptyset\right]
+ & =E_{P}\left[\tilde{f}\left(X,\varphi\left(Z\right)\right)\vert Z=z\right]-E_{P}\left[\tilde{f}\left(X,\varphi\left(Z\right)\right)\right]\\
+ & =E_{P}\left[f\left(X,Z\right)\vert Z=z\right]-E_{P}\left[f\left(X,Z\right)\right]
+\end{align*}
+Chúng ta cũng có:
+\begin{align*}
+& E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert X=x,Z_{1:K-1}=z_{1:K-1}\right]-E_{\tilde{P}}\left[\tilde{f}(X,Z_{1:K-1})\vert X=x\right] \\
+& =\tilde{f}(x,z_{1:K-1})-E_{P}\left[\tilde{f}(X,\varphi\left(Z\right))\vert X=x\right]\\
+ & =\tilde{f}(x,\varphi\left(z\right))-E_{P}\left[\tilde{f}(X,\varphi\left(Z\right))\vert X=x\right]\\
+ & =f(x,z)-E_{P}\left[f(X,Z)\vert X=x\right]
+\end{align*}
+Do đó, chúng ta có:
+\begin{align*}
+\phi_{Z_{1:K-1}}(\tilde{f}) & =\frac{1}{2}\left(E_{P}\left[f\left(X,Z\right)\vert Z=z\right]-E_{P}\left[f\left(X,Z\right)\right]\right)\\
+ & \:+\frac{1}{2}\left(f(x,z)-E_{P}\left[f(X,z)\vert X=x\right]\right)
+\end{align*}
+Chúng ta có thể nhận ra rằng ta có chính xác $\phi_{Z_{1:K-1}}(\tilde{f})=\phi_{Z}(f)$. Tương tự, chúng ta có thể suy ra rằng $\phi_{X}(\tilde{f};Z_{1:K-1})=\phi_{X}(f)$. 
+\end{proof}
+
+\begin{proposition} Nếu $X \sim \mathcal{N}(\mu, \Sigma)$, thì $X_{\bar{S}} | X_{S} = x_{S}$ cũng là một phân phối Gaussian đa biến với trung bình $\mu_{\bar{S} | S}$ và ma trận hiệp phương sai $\Sigma_{\bar{S} | S}$ bằng:
+\begin{equation*}
+    \mu_{\bar{S} | S} = \mu_{\bar{S}} + \Sigma_{\bar{S}, S}\Sigma_{S, S}^{-1}(x_S - \mu_S) \; \text{ và  } \Sigma_{\bar{S} | S} = \Sigma_{\bar{S} \bar{S}} - \Sigma_{\bar{S} S} \Sigma_{S S}^{-1} \Sigma_{S, \bar{S}} 
+\end{equation*}
+\end{proposition}
+
+\section{Thực nghiệm và Phân tích kết quả}
+\subsection{Cài đặt thực nghiệm và bộ dữ liệu}
+
+Trong phần này, tác giả tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
+
+
+\subsubsection{Thí nghiêm 1: Đánh giá trên mô hình tuyến tính}
+    \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=1em]
+        \item \textbf{Bộ dữ liệu:} 
+        \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+            \item Bao gồm $n = 10^4$ quan sát $\{(X_i, Y_i)\}_{i=1}^{n}$, trong đó mỗi $X_i$ là vector các đặc trưng của quan sát thứ $i$ và $Y_i$ là giá trị mục tiêu tương ứng.
+            
+            \item $X \in \mathbb{R}^p$ với $p = 5$ đặc trưng, theo phân phối Gaussian đa biến: 
+            \begin{equation*}
+                X \sim \mathcal{N}(0, \Sigma), \quad 
+                \Sigma = \rho J_p + (\rho - 1) I_p, \quad 
+                \rho = 0.7,
+            \end{equation*}
+            trong đó:
+            
+                \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                    \item $J_p$ là ma trận $p \times p$ mà tất cả các phần tử đều bằng 1, và $I_p$ là ma trận đơn vị $p \times p$.
+
+                    \item $\Sigma$ là ma trận hiệp phương sai của các đặc trưng.
+            %             - Đường chéo $(\Sigma)_{ii} = 0.4$ là phương sai của từng feature.\\
+            % - Ngoại biên $(\Sigma)_{ij} = 0.7$ là hiệp phương sai (covariance) giữa các feature khác nhau, tạo tương quan dương giữa các đặc trưng.
+                
+                \end{itemize}
+            
+
+            
+            
+            
+            \item Biến mục tiêu:
+            \begin{equation*}
+                Y = B^T X,
+            \end{equation*}
+            với:
+            
+             \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                \item Vector $B$ chứa trọng số của từng đặc trưng, xác định mức đóng góp của mỗi đặc trưng vào $Y_i$.
+             \end{itemize}
+           
+            
+        \end{itemize}
+
+        \item \textbf{Chỉ số đánh giá và mô hình chuẩn so sánh}
+          \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+                \item Chỉ số đánh giá
+                    \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                        \item Relative Absolute Error (RAE): đo sai khác giữa SV ước lượng và SV thực
+                        \item True Positive Rate (TPR): kiểm tra thứ hạng $k$ đặc trưng quan trọng nhất
+                    \end{itemize}
+                \item Mô hình chuẩn so sánh
+                    \begin{itemize}[label=$+$, labelsep=0.3em, itemsep=0.2em]
+                        \item TreeSHAP: thuật toán chuẩn cho mô hình cây
+                        \item Leaf estimator: sử dụng kỳ vọng có điều kiện trong từng lá cây
+                    \end{itemize}
+            </end{itemize}
+
+            \item \textbf{Phân tích kết quả và giải thích}
+            
+            Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các phương pháp ước lượng Shapley Value (SV) trên tập dữ liệu trên với $p=5$ đặc trưng. Cụ thể:
+              \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
+                \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE trung bình = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
+
+                \item \textbf{Leaf estimator} ($\hat{f}_{\text{Leaf}}$) có RAE = 0.90 và TPR = 94\% (±12\%), chứng tỏ độ chính xác cao hơn TreeSHAP, đặc biệt khi các đặc trưng có tương quan.  
+              </end{itemize}
+            
+            
+
+            
+           \textbf{Giải thích:} 
+
+             TreeShap: Do tác giả đang giả định là khi một feature phụ thuộc vào các feature khác - tức là feature đó nằm trong xích Markov của nó - TreeSHAP vẫn giả định rằng các feature ngoài tập feature đang xét là độc lập. Giả định này đồng nghĩa với việc mọi ảnh hưởng thực sự từ các feature trong xích Markov nhưng không xuất hiện trên path của cây đều bị bỏ qua khi tính giá trị đóng góp.
+                        
+            Ngược lại, Leaf estimator tính giá trị kỳ vọng có điều kiện của feature trong từng leaf, dựa trực tiếp trên phân phối thực tế của feature trong lá đó. Do đó, Leaf estimator phản ánh chính xác mức đóng góp của feature ngay cả khi có sự phụ thuộc giữa các feature hoặc dữ liệu không liên tục. Kết quả là Leaf estimator ít bị bias hơn và cho các giá trị Shapley gần với true SV hơn, giúp giải thích mô hình đáng tin cậy hơn.
+
+
+        
+    \end{itemize}
+\end{itemize}
+\end{itemize}
+
+
+\section{Kết luận và định hướng nghiên cứu tương lai}
+
+\subsection{Kết luận}
+
+nhóm nghiên cứu đã chỉ ra rằng việc triển khai hiện tại của Shapley Values (SV) có thể dẫn đến các giải thích thiếu tin cậy do ước lượng bị sai lệch hoặc xử lý không phù hợp với biến phân loại. Để khắc phục vấn đề này, nhóm nghiên cứu đã đề xuất các bộ ước lượng mới và đưa ra phương pháp đúng để xử lý biến phân loại. 
+
+Kết quả thực nghiệm cho thấy ngay cả trong những mô hình đơn giản, sự khác biệt giữa phương pháp tiên tiến hiện nay (TreeSHAP) và các phương pháp được đề xuất là đáng kể.
+
+Mặc dù có sự quan tâm ngày càng lớn đến lĩnh vực AI đáng tin cậy, tác động của những sai lệch này trong giải thích vẫn chưa được hiểu rõ. Nguyên nhân là do khó khăn trong việc đánh giá định lượng chất lượng của một lời giải thích, vốn phụ thuộc vào phân phối dữ liệu gốc, thứ rất khó để ước lượng. Hơn nữa, quá trình đánh giá thường dễ bị ảnh hưởng bởi thiên kiến xác nhận (confirmation bias).
+
+nhóm nghiên cứu cũng cho rằng chất lượng ước lượng không phải là hạn chế duy nhất của SV. Thực tế, nhóm nghiên cứu chứng minh trong Mệnh đề 5.1 rằng giải thích bằng SV không phải là giải thích cục bộ (local), mà vẫn mang tính toàn cục (global), ngay cả trong mô hình tuyến tính đơn giản.
+
+Mệnh đề 5.1 cho thấy rằng SV không thực sự đo lường mang tính cục bộ, mà thay vào đó vẫn chịu ảnh hưởng toàn cục. Nguyên nhân là khi tính SV cho $X_1$ hoặc $X_2$, ta cũng xem xét các tập con $S$ không chứa $X_5$. Quá trình lấy trung bình và thay đổi dấu của $X_5$ đã vô tình đưa cả mô hình tuyến tính còn lại (không áp dụng cho quan sát hiện tại) vào. 
+
+Phát hiện này đặt ra những thách thức lớn trong việc diễn giải SV và cho thấy các hạn chế thường bị bỏ qua trong thực tiễn do thiếu sự chính xác và hiểu biết về Shapley Values.
+
+\subsection{Định hướng nghiên cứu tương lai}
+
+Trong tương lai, có thể tập trung vào các hướng sau:
+\begin{itemize}
+    \item Phát triển bộ chuẩn đánh giá hệ thống cho chất lượng giải thích trong AI. 
+    \item Nghiên cứu các phương pháp thay thế SV mang lại giải thích thực sự cục bộ. 
+    \item Mở rộng phân tích sang mô hình phi tuyến và không gian chiều cao. 
+    \item Khảo sát tác động tâm lý và thực tiễn của các sai lệch trong giải thích AI khi áp dụng trong các hệ thống thực tế. 
+\end{itemize}
+
+
+>>>>>>> 466b07c (workable)
 \bibliographystyle{plainnat}
 \bibliography{references}  
 \end{document}
