@@ -152,25 +152,25 @@
 
 % --- ABSTRACT ---
 \begin{abstract}
-    Giá trị Shapley (Shapley Value, SV) thường được dùng trong các AI minh bạch (explainable AI, XAI) nhưng việc xấp xỉ và suy diễn giá trị này vẫn còn gặp nhiều khó khăn. Điều này cho những kết quả và kết luận sai lệch. Do đó, nhóm nghiên cứu nêu lên định lý bất biến của SV, từ đó xây dựng phương pháp tính SV đối với các biến phân loại mà chịu ảnh hưởng nhiều từ bởi công thức mã hóa (encoding). Đối với cây lựa chọn (Decision Tree), nhờ việc tận dụng cấu trúc đặc trưng của cây , nhóm nghiên cứu đưa ra được hai phương pháp xấp xỉ SV với độ chính xác cao hơn các phương pháp khác lâm thời. Hai phương pháp được chạy giả lập và so sánh cùng với các phương pháp lâm thời, điều này chỉ ra lợi thế thực tiễn của phương pháp nhóm nghiên cứu đưa ra. Cuối cùng, Nhóm nghiên cứu đánh giá các hạn chế của SV với tiêu chí là là một giải thích cục bộ (local explaination). Các pháp trên được xây dựng thành một python package.
+    Giá trị Shapley (Shapley Value, SV) thường được dùng trong các AI minh bạch (explainable AI hay còn gọi là XAI) nhưng việc xấp xỉ và suy diễn giá trị này vẫn còn gặp nhiều khó khăn. Điều này cho những kết quả và kết luận sai lệch. Do đó, nhóm nghiên cứu nêu lên định lý bất biến của SV, từ đó xây dựng phương pháp tính SV đối với các biến phân loại mà chịu ảnh hưởng nhiều từ bởi công thức mã hóa (encoding). Đối với cây lựa chọn (Decision Tree), nhờ việc tận dụng cấu trúc đặc trưng của cây , nhóm nghiên cứu đưa ra được hai phương pháp xấp xỉ SV với độ chính xác cao hơn các phương pháp khác lâm thời. Hai phương pháp được chạy giả lập và so sánh cùng với các phương pháp lâm thời, điều này chỉ ra lợi thế thực tiễn của phương pháp nhóm nghiên cứu đưa ra. Cuối cùng, Nhóm nghiên cứu đánh giá các hạn chế của SV với tiêu chí là là một giải thích cục bộ (local explaination). Các pháp trên được xây dựng thành một Python package.
 \end{abstract}
 
-0\section{Giới thiệu}
+\section{Giới thiệu}
 
-Xu hướng của việc áp dụng AI vào nghiên cứu khoa học, kinh tế, tài chính, sản xuất ngày càng phát triển mạnh hơn. Nhu cầu suy diễn và đánh giá được các ai (ai model) ngày càng cần thiết. Thực tế rằng các model ai thường không hề tường minh, những model này gọi là black-box ai và chiếm đại đa số. Nhưng người sử dụng ai models có nhu cầu thiết yếu để có thể xét tính cường độ ảnh hưởng ( tính quan trọng) của biến số đầu vào lên kết quả, cũng như xác định model có sự thiên vị (bias) đối với một hay những biến số. Việc xét trọng tố toàn cục (global importance) bằng phương pháp tiêu chuẩn~\citep{breiman2001random} còn rất yếu kém về mảng giải thích các dự đoán cục bộ (local prediction). Công cuộc tìm kiếm giải pháp khắc phục vấn đề trên vẫn luôn là vấn đề nóng hổi của AI minh bạch (Explainable AI , XAI).
+Xu hướng của việc áp dụng AI vào nghiên cứu khoa học, kinh tế, tài chính, sản xuất ngày càng phát triển mạnh hơn. Nhu cầu suy diễn và đánh giá được các mô hình học máy ngày càng cần thiết. Thực tế rằng các mô hình học máy thường không hề tường minh, những mô hình này gọi là mô hình "hộp đen" và chiếm đại đa số. Nhưng người sử dụng mô hình học máy có nhu cầu thiết yếu để có thể xét tính cường độ ảnh hưởng ( tính quan trọng) của biến số đầu vào lên kết quả, cũng như xác định mô hình có sự thiên vị (bias) đối với một hay những biến số. Việc xét trọng tố toàn cục (global importance) bằng phương pháp tiêu chuẩn~\citep{strumbelj2010} còn rất yếu kém về mảng giải thích các dự đoán cục bộ (local prediction). Công cuộc tìm kiếm giải pháp khắc phục vấn đề trên vẫn luôn là vấn đề nóng hổi của AI minh bạch (Explainable AI , XAI).
 
-Một trong những phương pháp diễn giải phổ biến nhất là Shapley Values (SV), một khái niệm bắt nguồn từ Lý thuyết Trò chơi Hợp tác (Cooperative Game Theory)~\citep{Shapley1953}. SV cung cấp một cách "công bằng" để đánh giá sự đóng góp của từng biến đầu vào vào một dự đoán cụ thể của mô hình. Mặc dù được sử dụng rộng rãi, việc ước tính và diễn giải SV có thể gặp nhiều thách thức, dẫn đến các suy luận và giải thích không chính xác. Bài báo "Accurate Shapley Values for explaining tree-based models" của Amoukou và cộng sự đã chỉ ra hai vấn đề lớn trong các phương pháp hiện tại:
+Một trong những phương pháp diễn giải phổ biến nhất là Shapley Values (SV), một khái niệm bắt nguồn từ Lý thuyết Trò chơi Hợp tác (Cooperative Game Theory)~\citep{Shapley1953}. SV cung cấp một cách "công bằng" để đánh giá sự đóng góp của từng biến đầu vào vào một dự đoán cụ thể của mô hình~\citep{breiman2001random}. Mặc dù được sử dụng rộng rãi, việc ước tính và diễn giải SV có thể gặp nhiều thách thức, dẫn đến các suy luận và giải thích không chính xác. Bài báo "Accurate Shapley Values for explaining tree-based models" của Amoukou và cộng sự đã chỉ ra hai vấn đề lớn trong các phương pháp hiện tại:
 
 \begin{itemize}
     \item{Xử lý sai các biến hạng mục (categorical variables): Các phương pháp mã hóa phổ biến (như One-Hot-Encoding) làm thay đổi số lượng biến, và việc tính toán SV bằng cách cộng dồn SV của các biến được mã hóa là không chính xác về mặt lý thuyết và dẫn đến kết quả sai lệch.}
     \item{Độ chệch (bias) của các thuật toán hiện đại: Thuật toán tiên tiến nhất cho các mô hình dựa trên cây, TreeSHAP, có độ chệch cao khi các biến đầu vào có sự phụ thuộc lẫn nhau.}
 \end{itemize}
 
-Bài viết chỉ ra rằng thuật toán tiên tiến nhất lâm thời TreeSHAP~\citep{lundbergshap}, có độ bias cao khi các biến số ban đầu phụ thuộc lẫn nhau. Vì thế, họ đã xây dựng một phép tính xấp SV chính xác hơn dựa trên lý thuyết xác suất thống kê.
-Hơn nữa, khi áp dụng TReeSHAP đối với biến phân loại , bài viết chỉ ra rằng việc TReeSHAP xấp xỉ SV bằng phương pháp lấy tổng SV của các biến phân loại sau chuyển mã là sai trái và dẫn tới nhưng phân tích nhảm nhí. Thay vào đó , những phép xấp xỉ của nhóm đã đem lại sự xấp xỉ chính xác và giảm thiểu bia. Những đóng góp đều đã được tập hợp thành một python package.
+Bài viết chỉ ra rằng thuật toán tiên tiến nhất lâm thời TreeSHAP~\citep{lundberg2020local2global}, có độ bias cao khi các biến số ban đầu phụ thuộc lẫn nhau. Vì thế, họ đã xây dựng một phép tính xấp SV chính xác hơn dựa trên lý thuyết xác suất thống kê.
+Hơn nữa, khi áp dụng TReeSHAP đối với biến phân loại , bài viết chỉ ra rằng việc TReeSHAP xấp xỉ SV bằng phương pháp lấy tổng SV của các biến phân loại sau chuyển mã là sai trái và dẫn tới nhưng phân tích không chính xác. Thay vào đó , những phép xấp xỉ của nhóm đã đem lại sự xấp xỉ chính xác và giảm thiểu sai lệch. Những đóng góp đều đã được tập hợp thành một Python package.
 
 \subsection{Report structure outline}
-Báo cáo này được cấu trúc thành sáu chương theo yêu cầu của đề bài. Chương II trình bày các công trình liên quan trong lĩnh vực XAI và tính toán SV. Chương III cung cấp kiến thức nền tảng về Cây quyết định và Shapley Values. Chương IV đi sâu vào phương pháp luận được đề xuất trong bài báo. Chương V phân tích các thí nghiệm và kết quả đã thực hiện. Cuối cùng, Chương VI tổng kết các kết quả chính, thảo luận về các hạn chế và đề xuất hướng nghiên cứu trong tương lai.
+Báo cáo này được cấu trúc thành sáu chương. Chương I giới thiệu về giá trị Shapley Values và cấu trúc tổng quan. Chương II trình bày các công trình liên quan trong lĩnh vực XAI và tính toán SV. Chương III cung cấp kiến thức nền tảng về Cây quyết định và Shapley Values. Chương IV đi sâu vào phương pháp luận được đề xuất trong bài báo. Chương V phân tích các thí nghiệm và kết quả đã thực hiện. Cuối cùng, Chương VI tổng kết các kết quả chính, thảo luận về các hạn chế và đề xuất hướng nghiên cứu trong tương lai.
 
 \section{Các công trình liên quan (Related Works)}
 
@@ -187,16 +187,16 @@ Do đó, các phương pháp giải thích cục bộ đã ra đời và thu hú
     \item \textbf{Local Surrogate (LIME)}: Là một phương pháp độc lập với mô hình (model-agnostic), hoạt động bằng cách xây dựng một mô hình đơn giản (ví dụ: hồi quy tuyến tính) để xấp xỉ và giải thích hành vi của mô hình hộp đen phức tạp tại một vùng lân cận của dự đoán cần giải thích~\citep{ribeiro2016why}.
 \end{itemize}
 
-Trong bối cảnh đó, Shapley Values (SV), một khái niệm từ Lý thuyết Trò chơi Hợp tác~\citep{Shapley1953}, đã được điều chỉnh để áp dụng cho XAI nhằm đánh giá sự đóng góp "công bằng" của mỗi biến vào một dự đoán cụ thể~\citep{lundbergshap}. Ý tưởng cốt lõi là phân tích hành vi của mô hình bằng cách loại bỏ các biến và xem xét các ``hàm dự đoán rút gọn'' (reduced predictors)~\citep{Covert2020}.
+Trong bối cảnh đó, Shapley Values (SV), một khái niệm từ Lý thuyết Trò chơi Hợp tác~\citep{Shapley1953}, đã được điều chỉnh để áp dụng cho XAI nhằm đánh giá sự đóng góp "công bằng" của mỗi biến vào một dự đoán cụ thể~\citep{lundberg2020local2global}. Ý tưởng cốt lõi là phân tích hành vi của mô hình bằng cách loại bỏ các biến và xem xét các ``hàm dự đoán rút gọn'' (reduced predictors)~\citep{Covert2020}.
 
 \subsection{So sánh với các Phương pháp Tiếp cận Hiện có}
 
 Việc tính toán SV đối mặt với thách thức lớn là ước tính kỳ vọng có điều kiện, đặc biệt khi các biến phụ thuộc lẫn nhau~\citep{aas2020explaining}. Các phương pháp hiện có giải quyết vấn đề này theo nhiều cách:
 
 \begin{enumerate}
-    \item \textbf{Các phương pháp tổng quát:} Một số phương pháp cố gắng mô hình hóa trực tiếp phân phối đồng thời của các biến, ví dụ như sử dụng phân phối Gaussian hoặc vine copula, để lấy mẫu từ các phân phối có điều kiện~\citep{aas2021explaining}. Các phương pháp khác thậm chí huấn luyện một mô hình riêng cho mỗi tập hợp con các biến, cho kết quả chính xác nhưng cực kỳ tốn kém về mặt tính toán~\citep{Covert2020}.
+    \item \textbf{Các phương pháp tổng quát:} Một số phương pháp cố gắng mô hình hóa trực tiếp phân phối đồng thời của các biến, ví dụ như sử dụng phân phối Gaussian hoặc vine copula, để lấy mẫu từ các phân phối có điều kiện~\citep{aas2020explaining}~\citep{aas2021explaining}, hoặc sử dụng phương pháp lấy mẫu ~\citep{lundberg2020local2global}~\citep{improvingkernelCovert}. Các phương pháp khác thậm chí huấn luyện một mô hình riêng cho mỗi tập hợp con các biến, cho kết quả chính xác nhưng cực kỳ tốn kém về mặt tính toán~\citep{williamson2020efficient}.
 
-    \item \textbf{TreeSHAP (Phương pháp chuyên biệt cho mô hình cây):} Đây là phương pháp tiên tiến nhất (state-of-the-art) dành riêng cho các mô hình dựa trên cây. TreeSHAP vượt trội hơn các phương pháp lấy mẫu vì nó có thể tính toán chính xác giá trị SV bằng cách khai thác hiệu quả cấu trúc của cây~\citep{lundbergshap}. Tuy nhiên, điểm yếu chí mạng của TreeSHAP là nó dựa trên một giả định đơn giản hóa quá mức: nó cho rằng xác suất có điều kiện có thể được phân tách theo đường đi quyết định trong cây (một dạng tính chất Markov)~\citep{aas2020explaining}. Giả định này thường bị vi phạm trong thực tế khi các biến có sự tương quan, dẫn đến việc TreeSHAP trở nên \textbf{``có độ chệch cao khi các biến phụ thuộc''}~\citep{aas2020explaining}.
+    \item \textbf{TreeSHAP (Phương pháp chuyên biệt cho mô hình cây):} Đây là phương pháp tiên tiến nhất (state-of-the-art) dành riêng cho các mô hình dựa trên cây. TreeSHAP vượt trội hơn các phương pháp lấy mẫu vì nó có thể tính toán chính xác giá trị SV bằng cách khai thác hiệu quả cấu trúc của cây~\citep{lundberg2020local2global}. Tuy nhiên, điểm yếu chí mạng của TreeSHAP là nó dựa trên một giả định đơn giản hóa quá mức: nó cho rằng xác suất có điều kiện có thể được phân tách theo đường đi quyết định trong cây (một dạng tính chất Markov)~\citep{aas2020explaining}. Giả định này thường bị vi phạm trong thực tế khi các biến có sự tương quan, dẫn đến việc TreeSHAP trở nên \textbf{``có độ chệch cao khi các biến phụ thuộc''}~\citep{aas2020explaining}.
 \end{enumerate}
 
 \subsection{Xác định các Khoảng trống Nghiên cứu}
@@ -209,7 +209,7 @@ Từ việc so sánh trên, có thể xác định hai khoảng trống nghiên 
 
 \subsection{Định vị Công trình Nghiên cứu}
 
-Công trình ``Accurate Shapley Values for explaining tree-based models'' định vị mình một cách rõ ràng là một sự \textbf{cải tiến và sửa chữa trực tiếp} cho TreeSHAP, phương pháp giải thích hàng đầu cho các mô hình cây~\citep{lundbergshap}.
+Công trình ``Accurate Shapley Values for explaining tree-based models'' định vị mình một cách rõ ràng là một sự \textbf{cải tiến và sửa chữa trực tiếp} cho TreeSHAP, phương pháp giải thích hàng đầu cho các mô hình cây~\citep{lundberg2020local2global}.
 
 \begin{itemize}
     \item \textbf{Về vấn đề phụ thuộc:} Bài báo giới thiệu hai bộ ước tính mới (Discrete và Leaf-based) có nền tảng thống kê, được thiết kế để thay thế cho cơ chế ước tính bị chệch của TreeSHAP, giúp tính toán SV chính xác hơn~\citep{aas2020explaining}.
@@ -257,7 +257,7 @@ Cho $f$ và hàm tái tham số hóa của nó $\Tilde{f} = f \circ \boldsymbol{
      \phi_{X_i}(f) = \phi_{U_i}(\tilde{f}). \label{eq:equivariance} 
 \end{align}
 \end{proposition}
-Công thức này chỉ ra rằng thông tin được cung cấp bởi mỗi đặc trưng $X_i$ trong phần giải thích là độc lập với bất kỳ phương pháp mã hóa nào, như đã đề cập bởi \cite{owen2017shapley}. Giá trị SV chủ yếu phụ thuộc vào cấu trúc phụ thuộc của các đặc trưng. Do đó, Giá trị Shapley của một đặc trưng $X_i$ vẫn giữ nguyên sau khi biến đổi vi phôi $\varphi$, ta có $\phi_{X_i}(f) = \phi_{U_i}(\tilde{f})$. Giả sử một biến $X_i$ được tách thành $C$ biến tương quan $\Tilde{X}_C = (X_i)_{i \in C}$, ví dụ, bằng cách rời rạc hóa một đặc trưng. Vì $X_i$ và $\Tilde{X}_C$ mang cùng một thông tin, chúng ta có thể đặt câu hỏi liệu SV của nhóm đặc trưng $\Tilde{X}_C$ có bằng SV của $X_i$ hay không.
+Công thức này chỉ ra rằng thông tin được cung cấp bởi mỗi đặc trưng $X_i$ trong phần giải thích là độc lập với bất kỳ phương pháp mã hóa nào, như đã đề cập bởi \cite{covert2020explaining}. Giá trị SV chủ yếu phụ thuộc vào cấu trúc phụ thuộc của các đặc trưng. Do đó, Giá trị Shapley của một đặc trưng $X_i$ vẫn giữ nguyên sau khi biến đổi vi phôi $\varphi$, ta có $\phi_{X_i}(f) = \phi_{U_i}(\tilde{f})$. Giả sử một biến $X_i$ được tách thành $C$ biến tương quan $\Tilde{X}_C = (X_i)_{i \in C}$, ví dụ, bằng cách rời rạc hóa một đặc trưng. Vì $X_i$ và $\Tilde{X}_C$ mang cùng một thông tin, chúng ta có thể đặt câu hỏi liệu SV của nhóm đặc trưng $\Tilde{X}_C$ có bằng SV của $X_i$ hay không.
 
 \subsection{Chứng minh tính bất biến của SV đối với các biến phân loại được mã hóa}
 
@@ -325,7 +325,7 @@ Chúng ta có thể nhận ra rằng ta có chính xác $\phi_{Z_{1:K-1}}(\tilde
 \end{equation*}
 \end{proposition}
 \subsection{Thuật toán Tree SHAP tính xác suất có điều kiện}
-Nhóm tác giả nhấn mạnh sự quan tâm tới mô hình cây vì nó đã được Lundberg khai thác để đưa ra giải thuật Tree SHAP giúp tính toán chính xác Shapley Values. Sau khi trình bày hạn chế của giải thuật Tree SHAP, nhóm tác giả đề xuất 2 phương pháp ước lượng Shapley Values chính xác hơn.
+Nhóm tác giả nhấn mạnh sự quan tâm tới mô hình cây vì nó đã được ~\citep{lundberg2020local2global} khai thác để đưa ra giải thuật Tree SHAP giúp tính toán chính xác Shapley Values. Sau khi trình bày hạn chế của giải thuật Tree SHAP, nhóm tác giả đề xuất 2 phương pháp ước lượng Shapley Values chính xác hơn.
 Nhóm tác giả xét một mô hình dựa trên cây $f$ được định nghĩa trên $\mathbb{R}^p$ 
 (các biến phân loại được mã hóa theo one-hot). Khi đó có:
 \[
@@ -361,7 +361,7 @@ f_S(x_S) \;=\; \sum_{m \in \mathcal{C}(S,x)} f_m \, \mathbb{P}_X\!\bigl(L_m \,\b
 Tiếp đó nhóm nghiên cứu nói về việc cần một mô hình để có thể tính toán mật độ xác suất và ước lượng chính xác \(\mathbb{P}_X(L_m \mid X_S = x_S)\). Thông thường đối với trường hợp\(X \sim \mathcal{N}(\mu, \Sigma)\), chúng ta có thể tính tích phân mật độ để suy ra xác suất có điều kiện
 \(
 \mathbb{P}_X\!\left(\; \prod_{k=1}^{d_m} I_{N_k} \;\middle|\; X_S = x_S \right).
-\). Việc tính toán có thể trở nên phức tạp, nên một số giả định về phân rã hay phân phối của xác suất được đưa ra nhằm tính nhanh hơn. Nhóm nghiên cứu đề cập tới bài báo (Lundberg et al., 2020), các tác giả đã đưa ra thuật toán đệ quy với giả định rằng xác suất của một lá tương thích $L_M$ có thể được phân rã sử dụng cây quyết định:
+\). Việc tính toán có thể trở nên phức tạp, nên một số giả định về phân rã hay phân phối của xác suất được đưa ra nhằm tính nhanh hơn. Nhóm nghiên cứu đề cập tới bài báo ~\citep{lundberg2020local2global}, các tác giả đã đưa ra thuật toán đệ quy với giả định rằng xác suất của một lá tương thích $L_M$ có thể được phân rã sử dụng cây quyết định:
 \[
 P_X^{\text{SHAP}}\!\left(
    \prod_{k=1}^{d_m} I_{N_k} \;\middle|\; X_S = x_S
@@ -381,7 +381,7 @@ $\varphi_i\!\left(\hat{f}^{\text{SHAP}}_{S}; x\right)$ là phương pháp ươ
 \subsection{Ước lượng xác suất có điều kiện sử dụng Thống kê}
 Tác giả phân biệt 2 trường hợp của các biến: rời rạc và liên tục hoặc hỗn hợp. Chúng ta phải hiểu rằng đây không phải là tính chất của các biến mà 2 trường hợp được phân chia theo hướng giải quyết các biến. Điều đó có nghĩa là trường hợp đầu có thể giải quyết bằng phương pháp rời rạc hóa và trường hợp sau nhóm nghiên cứu tận dụng cấu trúc cây để tính xác suất. \\
 Đầu tiên, nhóm nghiên cứu đưa ra bài toán ước lượng xác suất từ tập dữ liệu huấn luyện $D_x^{\text{train}} \sim P_X$. 
-Khác với Aas et al.\ (2020, 2021), các nhà nghiên cứu không giả định tồn tại mật độ hay phân phối xác suất $p(x)$. Ta có tập dữ liệu $D_x^{\text{explain}}$, gồm những cá thể mới mà ta muốn ước lượng Shapley Value. \\
+Khác với ~\citep{aas2020explaining}~\citep{aas2021explaining}, các nhà nghiên cứu không giả định tồn tại mật độ hay phân phối xác suất $p(x)$. Ta có tập dữ liệu $D_x^{\text{explain}}$, gồm những cá thể mới mà ta muốn ước lượng Shapley Value. \\
 Trước hết, giả sử tất cả các biến đều là biến phân loại: khi đó, ta có thể ước lượng 
 \(
 P_X(L_m \mid X_S = x_S).
@@ -398,12 +398,11 @@ Khi đó ta có:
 \frac{N(L_m, x_S)}{N(x_S)}. \tag{10}
 \] 
 Nhóm tác giả đề xuất một cách tiếp cận đơn giản dựa trên phân hoạch theo phân vị cho các biến liên tục: xử lý này thường được dùng để tăng tính giải thích 
-của mô hình (đặc biệt cho các mô hình dựa trên cây), 
-xem thêm (Bénard et al., 2021b). 
+của mô hình (đặc biệt cho các mô hình dựa trên cây)~\citep{benard2021mda}. 
 Việc chia nhóm các quan sát cũng có thể giúp 
 ổn định các biến giải thích rút gọn và Shapley Value, 
-nhờ đó cải thiện độ chính xác của lời giải thích 
-(Alvarez-Melis và Jaakkola, 2018).  \\
+nhờ đó cải thiện độ chính xác của lời giải thích ~\citep{alvarez2018robustness}
+.  \\
 Trong các thí nghiệm, nhóm nghiên cứu thường chọn $q = 10$ phân vị. Việc chọn $q=10$ có thể hiểu do giá trị này là con số chuẩn mực, đủ nhỏ để không bị nhiễu dữ liệu nhưng cũng đủ lớn để không mất thông tin.
 Biến liên tục $X_i$ sau đó được mã hóa bằng các hàm chỉ báo 
 \[
@@ -466,8 +465,10 @@ f^{(\text{Leaf})}_S(x_S)
 f_m \, \widehat{P}^{(\text{Leaf})}_X \!\left( L_m \,\middle|\, X_S \in L_m^S \right) 
 \approx \sum_{m=1}^{M} f_m \, \mathbb{P}_X \!\left( L_m \,\middle|\, X_S \in L_m^S(x) \right).
 \]
-Sử dụng ước lượng này, nhóm nghiên cứu đề xuất thuật toán với độ phức tạp tăng theo cấp số mũ của độ sâu của cây thay vì theo số lượng đặc trưng. Điều này giúp cải thiện hiệu suất khi độ sâu của cây hiếm khi vượt quá 10. Phân tích về điều này, đó là do độ sâu càng lớn thì xảy ra hiện tượng quá khớp (overfitting). \\
-Nhóm nghiên cứu đề xuất mệnh đề sau:  \\
+Tiếp tục sử dụng ước lượng trên, nhóm nghiên cứu đề xuất thuật toán với độ phức tạp tăng theo cấp số mũ của độ sâu của cây thay vì theo số lượng đặc trưng. Điều này giúp cải thiện hiệu suất khi độ sâu của cây hiếm khi vượt quá 10. Phân tích về điều này, đó là do độ sâu càng lớn thì xảy ra hiện tượng quá khớp (overfitting). \\
+Nhóm nghiên cứu đưa ra mệnh đề sau:  \\
+\begin{proposition}
+    
 Giả sử $f(x) = \sum_{m=1}^{M} f_m \mathbf{1}_{L_m}(x)$ là một mô hình dựa trên cây và $X = (X_1, \dots, X_p)$. 
 Ta định nghĩa tập các biến $S_m = \{X_{N_1}, X_{N_2}, \dots, X_{N_{d_m}}\}$ 
 trên đường đi của mỗi lá $L_m$. \\
@@ -482,6 +483,8 @@ trong đó Shapley Value $\varphi_i^m\!\left(f^{(\text{Leaf})}, x\right)$ có c
 v\!\left(f^{(\text{Leaf})}, S\right) 
 = \mathbb{P}_X\!\left(L_m \,\middle|\, X_S \in L_m^S(x)\right).
 \]
+\end{proposition}
+
 Nhóm nghiên cứu đưa ra chứng minh cho mệnh đề trên như sau:
 \begin{proof}
 \[
@@ -550,7 +553,7 @@ P\big(L_m \mid X_{S' \cup i} \in L_m^{S' \cup i} \big)
 Theo nhóm nghiên cứu, việc tính Shapley Values cho $p$ biến với $M$ lá cây, lá cây có số lượng biến $|S_m|$ nhỏ hơn $D$, là độ sâu tối đa của bất kỳ
 cây nào có độ phức tạp tính toán là $O(p \times M \times 2^D)$
 trong các trường hợp xấu nhất. Thêm vào đó, thuật toán có tính tuyến tính theo số lượng quan sát. Tuy nhiên, độ phức tạp vẫn cao hơn so với Tree
-SHAP (Lundberg et al. (2020)), với độ phức tạp $O(M \times D^2)$. Dưới cây là mô tả thuật toán Multi-Games:
+SHAP ~\citep{lundberg2020local2global}, với độ phức tạp $O(M \times D^2)$. Dưới cây là mô tả thuật toán Multi-Games:
 \begin{algorithm}[H]
 \caption{Multi-Games Algorithm}
 \KwIn{$x$, $f(x) = \sum_{m=0}^{M} f_m \mathbf{1}_{L_m}(x)$}
@@ -588,7 +591,7 @@ $\phi \gets \text{zeros}(p)$\;
 Trong phần này, nhóm nghiên cứu tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
 
 \begin{adjustwidth}{0.0em}{0cm}
-Để so sánh các bộ ước lượng, cần một mô hình mà trong đó các giá trị kỳ vọng có điều kiện có thể xác định chính xác. Khi $X \sim N(\mu, \Sigma)$, phân phối điều kiện $X_{\bar{S}} \mid X_S = x_S$ cũng là Gaussian đa biến với vector trung bình và ma trận hiệp phương sai xác định rõ ràng, cụ thể:
+Để so sánh các bộ ước lượng, cần một mô hình mà trong đó các giá trị kỳ vọng có điều kiện có thể xác định chính xác. Khi $X \sim N(\mu, \Sigma)$, phân phối điều kiện $X_{\bar{S}} \mid X_S = x_S$ cũng là phân phối Gauss đa biến với vector trung bình và ma trận hiệp phương sai xác định rõ ràng, cụ thể:
 \end{adjustwidth}
 
 $\mu_{\bar{S}|S} = \mu_{\bar{S}} + \Sigma_{\bar{S},S} \Sigma_{S,S}^{-1} (x_S - \mu_S), \quad
@@ -643,7 +646,7 @@ và nhóm nghiên cứu không tiến hành so sánh với KernelSHAP, vì mục
                 \item Mô hình chuẩn so sánh
                       \begin{itemize}[label=$\circ$, left=1em, labelsep=0.75em, itemsep=0.5em]
                         \item TreeSHAP: thuật toán chuẩn cho mô hình cây
-                        \item Leaf estimator: sử dụng kỳ vọng có điều kiện trong từng lá cây
+                        \item Leaf Estimator: sử dụng kỳ vọng có điều kiện trong từng lá cây
                     \end{itemize}
         \end{itemize}
 
@@ -653,7 +656,7 @@ Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các ph�
 \end{adjustwidth}
             
         \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
-            \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
+            \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng quan trọng thấp hơn.  
     
             \item \textbf{Leaf estimator} ($\hat{f}_{\text{Leaf}}$) có RAE = 0.90 và TPR = 94\% (±12\%), chứng tỏ độ chính xác cao hơn TreeSHAP, đặc biệt khi các đặc trưng có tương quan.
     
@@ -665,7 +668,7 @@ Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các ph�
      \end{itemize}
 \subsubsection{Giải thích kết quả}
         \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
-            \item \textbf{TreeSHAP: }Tác giả giả định rằng khi một đặc trưng phụ thuộc vào các đặc trưng khác (tức nằm trong xích Markov của nó), TreeSHAP sẽ coi tất cả các đặc trưng ngoài tập đang xét là độc lập. Giả định này có nghĩa là bất kỳ ảnh hưởng thực sự nào từ các đặc trưng trong xích Markov nhưng không xuất hiện trên đường đi (path) của quan sát trong cây — tức những feature nằm ngoài path — sẽ bị bỏ qua khi tính giá trị đóng góp. Trong thực tế, các đặc trưng đó vẫn có thể có mối quan hệ hoặc ảnh hưởng đến đặc trưng đang xét, nên việc bỏ qua chúng khiến TreeSHAP không phản ánh đúng mức đóng góp thực tế của đặc trưng, dẫn tới giá trị Shapley bị lệch (bias). Chính bias này giải thích vì sao trên dữ liệu thực nghiệm, TreeSHAP có RAE trung bình cao và TPR thấp hơn so với Leaf estimator.
+            \item \textbf{TreeSHAP: }Tác giả giả định rằng khi một đặc trưng phụ thuộc vào các đặc trưng khác (tức nằm trong xích Markov của nó), TreeSHAP sẽ coi tất cả các đặc trưng ngoài tập đang xét là độc lập. Giả định này có nghĩa là bất kỳ ảnh hưởng thực sự nào từ các đặc trưng trong xích Markov nhưng không xuất hiện trên đường đi (path) của quan sát trong cây — tức những đặc trưng nằm ngoài đường đi — sẽ bị bỏ qua khi tính giá trị đóng góp. Trong thực tế, các đặc trưng đó vẫn có thể có mối quan hệ hoặc ảnh hưởng đến đặc trưng đang xét, nên việc bỏ qua chúng khiến TreeSHAP không phản ánh đúng mức đóng góp thực tế của đặc trưng, dẫn tới giá trị Shapley bị lệch (bias). Chính bias này giải thích vì sao trên dữ liệu thực nghiệm, TreeSHAP có RAE trung bình cao và TPR thấp hơn so với Leaf estimator.
     
             \item \textbf{Leaf estimator: }phương pháp này tính giá trị kỳ vọng có điều kiện của từng đặc trưng trong mỗi lá của cây, dựa trực tiếp trên phân phối thực tế của các đặc trưng trong lá. Khác với TreeSHAP, Leaf estimator không giả định các đặc trưng ngoài tập đang xét là độc lập, nên vẫn phản ánh chính xác mức đóng góp của các đặc trưng ngay cả khi chúng phụ thuộc lẫn nhau hoặc dữ liệu không liên tục. Nhờ đó, Leaf estimator ít bị lệch hơn (bias thấp hơn) và các giá trị Shapley gần hơn với giá trị thực, giúp việc giải thích mô hình trở nên đáng tin cậy hơn.
     
