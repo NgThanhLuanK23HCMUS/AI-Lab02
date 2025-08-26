@@ -324,9 +324,24 @@ Chúng ta có thể nhận ra rằng ta có chính xác $\phi_{Z_{1:K-1}}(\tilde
     \mu_{\bar{S} | S} = \mu_{\bar{S}} + \Sigma_{\bar{S}, S}\Sigma_{S, S}^{-1}(x_S - \mu_S) \; \text{ và  } \Sigma_{\bar{S} | S} = \Sigma_{\bar{S} \bar{S}} - \Sigma_{\bar{S} S} \Sigma_{S S}^{-1} \Sigma_{S, \bar{S}} 
 \end{equation*}
 \end{proposition}
+
 \section{Thực nghiệm và Phân tích kết quả}
 
-Trong phần này, tác giả tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
+Trong phần này, nhóm nghiên cứu tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
+
+\begin{adjustwidth}{0.0em}{0cm}
+Để so sánh các bộ ước lượng, cần một mô hình mà trong đó các giá trị kỳ vọng có điều kiện có thể xác định chính xác. Khi $X \sim N(\mu, \Sigma)$, phân phối điều kiện $X_{\bar{S}} \mid X_S = x_S$ cũng là Gaussian đa biến với vector trung bình và ma trận hiệp phương sai xác định rõ ràng, cụ thể:
+\end{adjustwidth}
+
+$\mu_{\bar{S}|S} = \mu_{\bar{S}} + \Sigma_{\bar{S},S} \Sigma_{S,S}^{-1} (x_S - \mu_S), \quad
+\Sigma_{\bar{S}|S} = \Sigma_{\bar{S}\bar{S}} - \Sigma_{\bar{S}S} \Sigma_{SS}^{-1} \Sigma_{S\bar{S}}$
+
+\begin{adjustwidth}{0.0em}{0cm}
+và nhóm nghiên cứu không tiến hành so sánh với KernelSHAP, vì mục tiêu chính là cải thiện TreeSHAP – phương pháp hiện đại và tối ưu cho các mô hình dựa trên cây. Hơn nữa, hầu hết các triển khai KernelSHAP dựa trên phân phối biên, nhằm hướng tới khả năng áp dụng rộng rãi, không phụ thuộc vào cấu trúc mô hình.  
+\end{adjustwidth}
+
+
+
 
 
 \subsection{Thí nghiêm 1: Đánh giá trên mô hình tuyến tính}
@@ -380,7 +395,7 @@ Kết quả trong Hình 3 cho thấy sự khác biệt rõ rệt giữa các ph�
 \end{adjustwidth}
             
         \begin{itemize}[align=parleft, left=4em, labelsep=1em, itemsep=0.5em]
-            \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE trung bình = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
+            \item \textbf{TreeSHAP} ($\hat{f}_{\text{SHAP}}$) có RAE = 3.31 và TPR = 86\% (±17\%), cho thấy mức độ sai số lớn hơn và khả năng giữ nguyên thứ hạng top-k feature thấp hơn.  
     
             \item \textbf{Leaf estimator} ($\hat{f}_{\text{Leaf}}$) có RAE = 0.90 và TPR = 94\% (±12\%), chứng tỏ độ chính xác cao hơn TreeSHAP, đặc biệt khi các đặc trưng có tương quan.
     
@@ -424,8 +439,25 @@ Từ hình 5 cho thấy, khi độ tương quan giữa các đặc trưng tăng 
 \subsubsection{Giải thích kết quả}
 \begin{adjustwidth}{2.0em}{0cm}
 
-Kết quả này có thể giải thích bằng cách xem xét giả định của TreeSHAP. TreeSHAP xem rằng các đặc trưng ngoài tập đặc trưng đang xét trên đường đi của cây là độc lập, do đó khi các đặc trưng thực sự phụ thuộc lẫn nhau (ρ cao), các ảnh hưởng từ đặc trưng bị bỏ qua, dẫn đến R-MAE tăng. Ngược lại, Leaf estimator dựa trên phân phối thực tế của các giá trị lá cây và không yêu cầu giả định độc lập, nên vẫn giữ được hiệu quả khi các đặc trưng phụ thuộc lẫn nhau. Do đó, trong các mô hình mà các đặc trưng có sự tương quan cao, Leaf estimator thể hiện độ chính xác giải thích tốt hơn TreeSHAP.
+Kết quả này có thể giải thích bằng cách xem xét giả định của TreeSHAP. TreeSHAP xem rằng các đặc trưng ngoài tập đặc trưng đang xét trên đường đi của cây là độc lập, do đó khi các đặc trưng thực sự phụ thuộc lẫn nhau (ρ cao), các ảnh hưởng từ đặc trưng bị bỏ qua, dẫn đến R-MAE tăng. Ngược lại, Leaf estimator dựa trên phân phối thực tế của các giá trị lá cây và không yêu cầu giả định độc lập, nên vẫn giữ được hiệu quả khi các đặc trưng phụ thuộc lẫn nhau. Do đó, trong các mô hình mà các đặc trưng có sự tương quan cao, Leaf estimator thể hiện độ chính xác giải thích tốt hơn TreeSHAP.\\
 \end{adjustwidth}
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Hơn nữa, nhóm nghiên cứu tiến hành so sánh thời gian tính toán giá trị Shapley (SV) bằng Leaf và TreeSHAP trên ba bộ dữ liệu có đặc trưng khác nhau: Boston ($n = 506, p = 13$), Adults ($n = 32561$, $p = 12$) và một mô hình tuyến tính giả lập ($n = 10000$, $p = 500$), trong đó $n$ là số quan sát và $p$ là số biến. Nhóm nghiên cứu huấn luyện XGBoost với các tham số mặc định trên các bộ dữ liệu này và tính SV cho 1000 quan sát của Adults và mô hình tuyến tính, cũng như 506 quan sát của Boston.  \\
+\end{adjustwidth}
+
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả từ hình bên dưới cho thấy TreeSHAP nhanh hơn đáng kể so với bộ ước lượng Leaf. Sự khác biệt về thời gian này phần nào được giải thích bởi Leaf phải duyệt toàn bộ dữ liệu cho mỗi lá, trong khi TreeSHAP tận dụng thông tin đã lưu trữ trong cây. Tuy nhiên, bộ ước lượng Leaf ít bị ảnh hưởng bởi số chiều của biến, bởi nó vẫn có thể tính SV cho $p = 500$ trong thời gian hợp lý.
+\end{adjustwidth}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{img/time.png}
+    \caption{Thời gian chạy của TreeSHAP và ước lượng Leaf trên các tập dữ liệu Adults (A), Boston (B) và toy (T).}
+\end{figure}
+
 
 
 
