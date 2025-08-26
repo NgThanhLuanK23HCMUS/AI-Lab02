@@ -10,7 +10,7 @@
 % Page Layout and Headers
 \usepackage[left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage{fancyhdr}
-
+\usepackage{algorithm}
 % Graphics and TikZ
 \usepackage{graphicx}
 \usepackage{tikz}
@@ -152,7 +152,7 @@
 
 % --- ABSTRACT ---
 \begin{abstract}
-    Giá trị Shapley (Shapley Value, SV) thường đường dùng trong các AI minh bạch (explainable AI, XAI) nhưng việc xấp xỉ và suy diễn giá trị này vẫn còn gặp nhiều khó khăn. Điều này cho những kết quả và kết luận sai lệch. Do đó, nhóm nghiên cứu nêu lên định lý bất biến của SV, từ đó xây dựng phương pháp tính SV đối với các biến phân loại mà chịu ảnh hưởng nhiều từ bởi công thức mã hóa (encoding). Đối với cây lựa chọn (Decision Tree), nhờ việc tận dụng cấu trúc đặc trưng của cây , nhóm nghiên cứu đưa ra được hai phương pháp xấp xỉ SV với độ chính xác cao hơn các phương pháp khác lâm thời. Hai phương pháp được chạy giả lập và so sánh cùng với các phương pháp lâm thời, điều này chỉ ra lợi thế thực tiễn của phương pháp nhóm nghiên cứu đưa ra. Cuối cùng, Nhóm nghiên cứu đánh giá các hạn chế của SV với tiêu chí là là một giải thích cục bộ (local explaination). Các pháp trên được xây dựng thành một python package.
+    Giá trị Shapley (Shapley Value, SV) thường được dùng trong các AI minh bạch (explainable AI, XAI) nhưng việc xấp xỉ và suy diễn giá trị này vẫn còn gặp nhiều khó khăn. Điều này cho những kết quả và kết luận sai lệch. Do đó, nhóm nghiên cứu nêu lên định lý bất biến của SV, từ đó xây dựng phương pháp tính SV đối với các biến phân loại mà chịu ảnh hưởng nhiều từ bởi công thức mã hóa (encoding). Đối với cây lựa chọn (Decision Tree), nhờ việc tận dụng cấu trúc đặc trưng của cây , nhóm nghiên cứu đưa ra được hai phương pháp xấp xỉ SV với độ chính xác cao hơn các phương pháp khác lâm thời. Hai phương pháp được chạy giả lập và so sánh cùng với các phương pháp lâm thời, điều này chỉ ra lợi thế thực tiễn của phương pháp nhóm nghiên cứu đưa ra. Cuối cùng, Nhóm nghiên cứu đánh giá các hạn chế của SV với tiêu chí là là một giải thích cục bộ (local explaination). Các pháp trên được xây dựng thành một python package.
 \end{abstract}
 
 0\section{Giới thiệu}
@@ -324,7 +324,265 @@ Chúng ta có thể nhận ra rằng ta có chính xác $\phi_{Z_{1:K-1}}(\tilde
     \mu_{\bar{S} | S} = \mu_{\bar{S}} + \Sigma_{\bar{S}, S}\Sigma_{S, S}^{-1}(x_S - \mu_S) \; \text{ và  } \Sigma_{\bar{S} | S} = \Sigma_{\bar{S} \bar{S}} - \Sigma_{\bar{S} S} \Sigma_{S S}^{-1} \Sigma_{S, \bar{S}} 
 \end{equation*}
 \end{proposition}
+\subsection{Thuật toán Tree SHAP tính xác suất có điều kiện}
+Nhóm tác giả nhấn mạnh sự quan tâm tới mô hình cây vì nó đã được Lundberg khai thác để đưa ra giải thuật Tree SHAP giúp tính toán chính xác Shapley Values. Sau khi trình bày hạn chế của giải thuật Tree SHAP, nhóm tác giả đề xuất 2 phương pháp ước lượng Shapley Values chính xác hơn.
+Nhóm tác giả xét một mô hình dựa trên cây $f$ được định nghĩa trên $\mathbb{R}^p$ 
+(các biến phân loại được mã hóa theo one-hot). Khi đó có:
+\[
+f(x) = \sum_{m=1}^{M} f_m \mathbf{1}_{L_m}(x)
+\]
+trong đó $L_m$ đại diện cho một lá (leaf). Các lá tạo thành một vùng của không gian đầu vào, 
+và mỗi lá có thể được viết dưới dạng:
+\[
+L_m = \prod_{i=1}^{p} [a_m^i, b_m^i], \quad (-\infty \le a_m^i < b_m^i \le +\infty)
+\]
 
+Mặt khác, lá cũng có thể được biểu diễn từ góc nhìn của đường đi quyết định: 
+một lá $L_m$ được xác định bởi một chuỗi các quyết định dựa trên $d_m$ biến $X_{N_k}$, $k = 1, \dots, d_m$. 
+Với mỗi node $N_k$ trên đường đi của lá $L_m$, ta gán một miền $I_{N_k}$ 
+(được xác định bởi một phép chia:$(-\infty, t_k]$ hoặc $[t_k, +\infty)$) và lá có thể được viết lại là:
+\[
+L_m = \{ x \in \mathbb{R}^p : x_{N_1} \in I_{N_1}, \dots, x_{N_{d_m}} \in I_{N_{d_m}} \}.
+\]
+
+Một điều thiết yếu là xác định tập hợp các lá tương thích với điều kiện $X_S = x_S$. 
+Khi đó có thể phân lá theo một liên minh $S$:
+\[
+L_m = L_m^S \times L_m^{\bar{S}}, \quad 
+L_m^S = \prod_{i \in S} [a_m^i, b_m^i], \quad 
+L_m^{\bar{S}} = \prod_{i \in \bar{S}} [a_m^i, b_m^i].
+\]
+
+Do đó, đối với mỗi điều kiện $X_S = x_S$, tập hợp các lá tương thích với 
+$x = (x_S, x_{\bar{S}})$ là 
+\[
+f_S(x_S) \;=\; \sum_{m \in \mathcal{C}(S,x)} f_m \, \mathbb{P}_X\!\bigl(L_m \,\big|\, X_S = x_S\bigr)
+\]
+Tiếp đó nhóm nghiên cứu nói về việc cần một mô hình để có thể tính toán mật độ xác suất và ước lượng chính xác \(\mathbb{P}_X(L_m \mid X_S = x_S)\). Thông thường đối với trường hợp\(X \sim \mathcal{N}(\mu, \Sigma)\), chúng ta có thể tính tích phân mật độ để suy ra xác suất có điều kiện
+\(
+\mathbb{P}_X\!\left(\; \prod_{k=1}^{d_m} I_{N_k} \;\middle|\; X_S = x_S \right).
+\). Việc tính toán có thể trở nên phức tạp, nên một số giả định về phân rã hay phân phối của xác suất được đưa ra nhằm tính nhanh hơn. Nhóm nghiên cứu đề cập tới bài báo (Lundberg et al., 2020), các tác giả đã đưa ra thuật toán đệ quy với giả định rằng xác suất của một lá tương thích $L_M$ có thể được phân rã sử dụng cây quyết định:
+\[
+P_X^{\text{SHAP}}\!\left(
+   \prod_{k=1}^{d_m} I_{N_k} \;\middle|\; X_S = x_S
+\right)
+=
+\delta_S(N_1) \times
+\prod_{\substack{i=2 \\ N_i \notin S}}^{d_m}
+P\!\left(
+   X_{N_i} \in I_{N_i}
+   \;\middle|\;
+   \prod_{\substack{k=2 \\ N_k \notin S}}^{i-1}
+   \{X_{N_{k-1}} \in I_{N_{k-1}}\}
+\right)
+\]
+Giả định cho phương trình trên là đường đi trên cây là một xích Markov, và ma trận chuyển xác suất được ước lượng trên điều kiện ${X_S = x_S}$. Theo nhóm nghiên cứu của bài báo, giả định này sai đối với tổng thể và có những sai lệch trong ước lượng của thuật toán này. Đây là tiền đề để nhóm nghiên cứu đưa ra 2 phương pháp ước lượng tương ứng. Nhóm nghiên cứu quy định rằng $\hat{f}^{\text{SHAP}}_{S}$ và 
+$\varphi_i\!\left(\hat{f}^{\text{SHAP}}_{S}; x\right)$ là phương pháp ước lượng và giá trị được ước lượng tương ứng.
+\subsection{Ước lượng xác suất có điều kiện sử dụng Thống kê}
+Tác giả phân biệt 2 trường hợp của các biến: rời rạc và liên tục hoặc hỗn hợp. Chúng ta phải hiểu rằng đây không phải là tính chất của các biến mà 2 trường hợp được phân chia theo hướng giải quyết các biến. Điều đó có nghĩa là trường hợp đầu có thể giải quyết bằng phương pháp rời rạc hóa và trường hợp sau nhóm nghiên cứu tận dụng cấu trúc cây để tính xác suất. \\
+Đầu tiên, nhóm nghiên cứu đưa ra bài toán ước lượng xác suất từ tập dữ liệu huấn luyện $D_x^{\text{train}} \sim P_X$. 
+Khác với Aas et al.\ (2020, 2021), các nhà nghiên cứu không giả định tồn tại mật độ hay phân phối xác suất $p(x)$. Ta có tập dữ liệu $D_x^{\text{explain}}$, gồm những cá thể mới mà ta muốn ước lượng Shapley Value. \\
+Trước hết, giả sử tất cả các biến đều là biến phân loại: khi đó, ta có thể ước lượng 
+\(
+P_X(L_m \mid X_S = x_S).
+\)
+Với mỗi $x \in D_x^{\text{explain}}$, ta định nghĩa các ký hiệu sau:
+\begin{itemize}
+    \item $N(x_S)$: số quan sát trong $D_x^{\text{train}}$ sao cho $X_S = x_S$
+    \item $N(L_m, x_S)$: số quan sát trong $D_x^{\text{train}}$ thuộc lá $L_m$ và đồng thời thỏa $X_S = x_S$.
+\end{itemize}
+
+Khi đó ta có:
+\[
+\hat{P}^{(D)}_X(L_m \mid X_S = x_S) \triangleq 
+\frac{N(L_m, x_S)}{N(x_S)}. \tag{10}
+\] 
+Nhóm tác giả đề xuất một cách tiếp cận đơn giản dựa trên phân hoạch theo phân vị cho các biến liên tục: xử lý này thường được dùng để tăng tính giải thích 
+của mô hình (đặc biệt cho các mô hình dựa trên cây), 
+xem thêm (Bénard et al., 2021b). 
+Việc chia nhóm các quan sát cũng có thể giúp 
+ổn định các biến giải thích rút gọn và Shapley Value, 
+nhờ đó cải thiện độ chính xác của lời giải thích 
+(Alvarez-Melis và Jaakkola, 2018).  \\
+Trong các thí nghiệm, nhóm nghiên cứu thường chọn $q = 10$ phân vị. Việc chọn $q=10$ có thể hiểu do giá trị này là con số chuẩn mực, đủ nhỏ để không bị nhiễu dữ liệu nhưng cũng đủ lớn để không mất thông tin.
+Biến liên tục $X_i$ sau đó được mã hóa bằng các hàm chỉ báo 
+\[
+X_i^{(r)}, \quad r = 1, \ldots, q-1.
+\]  
+
+Shapley Values của $X_i$ được tính bằng cách sử dụng 
+tập hợp các biến:
+\[
+C = \{ X_i^{(1)}, \ldots, X_i^{(q-1)} \}.
+\]  \\
+Khi đó, nhóm nghiên cứu định nghĩa mô hình rút gọn rời rạc , ký hiệu là
+\[
+\hat{f}_S^{(D)}(x_S) = \sum_{m \in C(S, x)} f_m \, \hat{P}_X^{(D)}(L_m \mid x_S). \tag{11}
+\] \\
+Từ đó, ước lượng SV là 
+\(
+\phi_i(\hat{f}^{(D)}; x).
+\) \\
+Theo nhóm nghiên cứu, cách tiền xử lý này làm mất đi một phần thông tin, nhưng không đáng kể so với các mô hình cây. Điều này có thể được giải thích là do cây chia nhánh theo ngưỡng, đường đi được quyết định bằng cách so sánh giá trị hiện tại với giá trị ngưỡng nên việc rời rạc hóa sẽ ít ảnh hưởng hiệu suất. Nhóm nghiên cứu cũng cho rằng với $q=10$ thì không gian đầu vào gồm $p^{10}$ ô, và việc tăng $p$ sẽ làm tăng số ô lên rất nhanh. Thêm vào đó, một hạn chế khác là một số ô có thể có phương sai cao làm cho việc ước lượng xác suất có điều kiện không ổn định. Khi số ô tăng lên nhưng số quan sát không đổi thì số ô rỗng hoặc có ít quan sát sẽ tăng lên, khi đó dữ liệu dễ nhiễu. \\\\
+Vì thế, nhóm nghiên cứu quyết định đề xuất phương pháp ước lượng sử dụng lá của cấu trúc cây. Trong trường hợp biến liên tục hoặc vừa rời rạc vừa liên tục, nhóm tác giả sử dụng các lá của cây đã ước lượng. Nhóm nghiên cứu thay thế điều kiện 
+\(\{X_S = x_S\}\) bằng \(\{X_S \in L^S_m\}\). Nhóm nghiên cứu nhận định rằng thay đổi này làm cho sai lệch trong tính toán, nhưng cũng giúp cải thiện phương sai. Điều đó là do khi thay điều kiện \(\{X_S = x_S\}\) bằng \(\{X_S \in L^S_m\}\) thì ta thay điều kiện điểm sang điều kiện theo vùng, khi đó một ô có nhiều điểm dữ liệu rơi vào hơn từ đó giúp tăng độ ổn định của phương sai. \\
+Nhóm nghiên cứu đề xuất ước lượng dựa trên lá:
+\[
+\hat{f}^{(\text{Leaf})}_S(x_S) = \frac{1}{Z(S,x)} 
+\sum_{m \in C(S,x)} f_m \, \hat{P}^{(\text{Leaf})}_X\!\Big(L_m \,\big|\, X_S \in L^S_m \Big)
+\]
+trong đó \(\hat{P}^{(\text{Leaf})}_X(L_m \mid X_S \in L^S_m)\) là một ước lượng xác suất có điều kiện, 
+và \(Z(S,x)\) là một hằng số chuẩn hóa.
+Định nghĩa của từng xác suất là:
+
+\[
+\hat{P}^{(\text{Leaf})}_X(L_m \mid X_S \in L^S_m) 
+= \frac{N(L_m)}{N(L^S_m)}
+\]
+với \(N(L_m)\) là số lượng quan sát (trong tập huấn luyện) rơi vào lá \(L_m\), và \(N(L^S_m)\) là số lượng quan sát 
+thỏa mãn điều kiện \(x_S \in L^S_m\) trên toàn bộ các lá của cây.
+Ta đi phân tích lý do nhóm nghiên cứu cần phải dùng hằng số chuẩn hóa cho công thức trên. Trong lý thuyết, nếu sử dụng điều kiện chính xác $\{X_S = x_S\}$ thì ta luôn có:
+\[
+\sum_{m \in \mathcal{C}(S, x)} \mathbb{P}_X(L_m \mid X_S = x_S) = 1.
+\]
+Tuy nhiên, điều kiện $\{X_S = x_S\}$ được thay thế bởi
+$\{X_S \in L_m^S\}$. Khi đó, các xác suất được ước lượng bởi:
+\[
+\hat{P}^{\text{Leaf}}_X\!\left(L_m \,\middle|\, X_S \in L^S_m\right) \;\approx\; \frac{N(L_m)}{N(L_m^S)}.
+\]
+Khi này, do điều kiện các lá khác nhau nên tổng xác suất của chúng khác $1$:
+\[
+\sum_{m \in \mathcal{C}(S,x)} \hat{P}^{\text{Leaf}}_X\!\left(L_m \,\middle|\, X_S \in L^S_m\right) \;\neq\; 1.
+\]
+Do đó, cần đưa vào một hằng số chuẩn hoá $Z(S,x)$ để đảm bảo tổng xác suất bằng $1$:
+\[
+Z(S, x) \;=\; \sum_{m \in \mathcal{C}(S,x)} \frac{N(L_m)}{N(L_m^S)}.
+\]
+\subsection{Thuật toán nhanh tính toán Shapley Values sử dụng uớc lượng lá}
+Ta cần nhắc đến ước lượng không chệch $\mathbb{E}\big[\widehat{P}_X(L_m \mid X_S \in L_m^S)\big] = \mathbb{P}_X(L_m \mid X_S \in L_m^S).$ Sử dụng ước lượng này, nhóm nghiên cứu chỉ ra ước lượng không chệch cho:
+\[
+f^{(\text{Leaf})}_S(x_S) 
+= \frac{1}{Z(S,x)} \sum_{m \in \mathcal{C}(S,x)} 
+f_m \, \widehat{P}^{(\text{Leaf})}_X \!\left( L_m \,\middle|\, X_S \in L_m^S \right) 
+\approx \sum_{m=1}^{M} f_m \, \mathbb{P}_X \!\left( L_m \,\middle|\, X_S \in L_m^S(x) \right).
+\]
+Sử dụng ước lượng này, nhóm nghiên cứu đề xuất thuật toán với độ phức tạp tăng theo cấp số mũ của độ sâu của cây thay vì theo số lượng đặc trưng. Điều này giúp cải thiện hiệu suất khi độ sâu của cây hiếm khi vượt quá 10. Phân tích về điều này, đó là do độ sâu càng lớn thì xảy ra hiện tượng quá khớp (overfitting). \\
+Nhóm nghiên cứu đề xuất mệnh đề sau:  \\
+Giả sử $f(x) = \sum_{m=1}^{M} f_m \mathbf{1}_{L_m}(x)$ là một mô hình dựa trên cây và $X = (X_1, \dots, X_p)$. 
+Ta định nghĩa tập các biến $S_m = \{X_{N_1}, X_{N_2}, \dots, X_{N_{d_m}}\}$ 
+trên đường đi của mỗi lá $L_m$. \\
+Với bất kỳ biến $X_i$, Shapley Value $\varphi_i\!\left(f^{(\text{Leaf})}, x\right)$ 
+có thể được phân rã thành tổng của $M$ đóng góp được xác định trên mỗi lá $L_m$, và ta có:
+\[
+\varphi_i\!\left(f^{(\text{Leaf})}, x\right) 
+= \sum_{m=1}^{M} \varphi_i^m\!\left(f^{(\text{Leaf})}, x\right),
+\]
+trong đó Shapley Value $\varphi_i^m\!\left(f^{(\text{Leaf})}, x\right)$ có các người chơi là các lá tương thích trong $S_m$ và hàm giá trị:
+\[
+v\!\left(f^{(\text{Leaf})}, S\right) 
+= \mathbb{P}_X\!\left(L_m \,\middle|\, X_S \in L_m^S(x)\right).
+\]
+Nhóm nghiên cứu đưa ra chứng minh cho mệnh đề trên như sau:
+\begin{proof}
+\[
+\varphi_i(f^{(\text{Leaf})}, x) =
+\frac{1}{p} \sum_{S \subseteq [p]\setminus\{i\}}
+\binom{p-1}{|S|}^{-1}
+\left( f^{(\text{Leaf})}_{S \cup i}(x_{S \cup i}) - f^{(\text{Leaf})}_S(x_S) \right)
+\]
+\[
+= \frac{1}{p} \sum_{S \subseteq [p]\setminus\{i\}}
+\binom{p-1}{|S|}^{-1}
+\left( \sum_{m=1}^M f_m \big[ \mathbb{P}(L_m \mid X_{S \cup i} \in L_m^{S \cup i}) 
+- \mathbb{P}(L_m \mid X_S \in L_m^S) \big] \right)
+\]
+\[
+= \frac{1}{p} \sum_{m=1}^M \sum_{S' \subseteq S_m \setminus \{i\}}
+\binom{p-1}{|S'|}^{-1} f_m
+\left[ \mathbb{P}(L_m \mid X_{S' \cup i} \in L_m^{S' \cup i})
+- \mathbb{P}(L_m \mid X_{S'} \in L_m^{S'}) \right]
+\]
+\[
++ \sum_{Z \neq \emptyset,\, Z \subseteq S_m \setminus i}
+\binom{p-1}{|Z|+|S'|}^{-1} f_m
+\left[ \mathbb{P}(L_m \mid X_{Z \cup S' \cup i} \in L_m^{Z \cup S' \cup i})
+- \mathbb{P}(L_m \mid X_{Z \cup S'} \in L_m^{Z \cup S'}) \right].
+\]
+
+Tuy nhiên, nếu $Z \subseteq \bar S_m$ và $S \subseteq S_m$:
+\[
+\mathbb{P}_X(L_m \mid X_{Z \cup S} \in L_m^{Z \cup S}) 
+= \mathbb{P}_X(L_m \mid X_S \in L_m^S).
+\tag{15}
+\]
+Phương trình trên không đúng nếu xác xuất có điều kiện $X_S = x_S$. Vì thế giá trị $\phi_i(f(Leaf), \mathbf{x})$ có thể được tính như sau:
+
+\begin{align*}
+& \frac{1}{p} \sum_{m=1}^{M} \sum_{S' \subseteq S_m \setminus \{i\}}
+\Bigg[
+\left( \binom{p-1}{|S'|} \right)^{-1} f_m 
+\Big(
+P\big(L_m \mid X_{S' \cup i} \in L_m^{S'^ \cup i} \big) 
+- P\big(L_m \mid X_{S'} \in L_m^{S'} \big)
+\Big) \\
+& \qquad + \sum_{\substack{Z \neq \emptyset \\ Z \subseteq S_m \cup i}}
+\left( \binom{p-1}{|Z| + |S'|} \right)^{-1} f_m
+\Big(
+P\big(L_m \mid X_{S' \cup i} \in L_m^{S' \cup i} \big) 
+- P\big(L_m \mid X_{S'} \in L_m^{S'} \big)
+\Big)
+\Bigg] \\
+&= \frac{1}{p} \sum_{m=1}^{M} \sum_{S' \subseteq S_m \setminus \{i\}}
+\Bigg[
+\left( \binom{p-1}{|S'|} \right)^{-1} 
++ \sum_{\substack{Z \neq \emptyset \\ Z \subseteq S_m \cup i}}
+\left( \binom{p-1}{|Z| + |S'|} \right)^{-1}
+\Bigg] \\
+& \qquad
+\times f_m 
+\Big(
+P\big(L_m \mid X_{S' \cup i} \in L_m^{S' \cup i} \big) 
+- P\big(L_m \mid X_{S'} \in L_m^{S'} \big)
+\Big) \\
+& \triangleq \sum_{m=1}^{M} \phi_i^m(\mathbf{x})
+\end{align*}
+\end{proof}
+Theo nhóm nghiên cứu, việc tính Shapley Values cho $p$ biến với $M$ lá cây, lá cây có số lượng biến $|S_m|$ nhỏ hơn $D$, là độ sâu tối đa của bất kỳ
+cây nào có độ phức tạp tính toán là $O(p \times M \times 2^D)$
+trong các trường hợp xấu nhất. Thêm vào đó, thuật toán có tính tuyến tính theo số lượng quan sát. Tuy nhiên, độ phức tạp vẫn cao hơn so với Tree
+SHAP (Lundberg et al. (2020)), với độ phức tạp $O(M \times D^2)$. Dưới cây là mô tả thuật toán Multi-Games:
+\begin{algorithm}[H]
+\caption{Multi-Games Algorithm}
+\KwIn{$x$, $f(x) = \sum_{m=0}^{M} f_m \mathbf{1}_{L_m}(x)$}
+\KwOut{$\phi$}
+
+$p \gets \text{length}(x)$\;
+$\phi \gets \text{zeros}(p)$\;
+
+\For{$m \gets 1$ \KwTo $M$}{
+    \For{$i$ in $[p]$}{
+        \If{$i$ not in $S_m$}{
+            \textbf{continue}\; \tcp{skip to next variable}
+        }
+        \For{$S \subseteq S_m$}{
+            $\phi[i] \gets \phi[i] + 
+            \Bigg( 
+                \binom{p-1}{|S|}^{-1} + 
+                \sum_{k=1}^{p - |S_m|} \binom{p-|S_m|}{k} 
+                \binom{p-1}{k+|S|}^{-1} 
+            \Bigg)\\
+            \times 
+            \Bigg(
+                \mathbf{1}_{L_m^{S \cup i}}(x_{S \cup i}) \frac{N(L_m)}{N(L_m^{S \cup i})} 
+                - \mathbf{1}_{L_m^S}(x_S) \frac{N(L_m)}{N(L_m^S)} 
+            \Bigg)$\;
+        }
+    }
+}
+
+\Return{$\phi$}\;
+
+\end{algorithm}
 \section{Thực nghiệm và Phân tích kết quả}
 
 Trong phần này, nhóm nghiên cứu tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
