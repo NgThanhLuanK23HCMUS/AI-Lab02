@@ -10,7 +10,7 @@
 % Page Layout and Headers
 \usepackage[left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage{fancyhdr}
-\usepackage{algorithm}
+% \usepackage{algorithm}
 % Graphics and TikZ
 \usepackage{graphicx}
 \usepackage{tikz}
@@ -166,8 +166,8 @@ Một trong những phương pháp diễn giải phổ biến nhất là Shapley
     \item{Độ chệch (bias) của các thuật toán hiện đại: Thuật toán tiên tiến nhất cho các mô hình dựa trên cây, TreeSHAP, có độ chệch cao khi các biến đầu vào có sự phụ thuộc lẫn nhau.}
 \end{itemize}
 
-Bài viết chỉ ra rằng thuật toán tiên tiến nhất lâm thời TreeSHAP~\citep{lundberg2020local2global}, có độ bias cao khi các biến số ban đầu phụ thuộc lẫn nhau. Vì thế, họ đã xây dựng một phép tính xấp SV chính xác hơn dựa trên lý thuyết xác suất thống kê.
-Hơn nữa, khi áp dụng TReeSHAP đối với biến phân loại , bài viết chỉ ra rằng việc TReeSHAP xấp xỉ SV bằng phương pháp lấy tổng SV của các biến phân loại sau chuyển mã là sai trái và dẫn tới nhưng phân tích không chính xác. Thay vào đó , những phép xấp xỉ của nhóm đã đem lại sự xấp xỉ chính xác và giảm thiểu sai lệch. Những đóng góp đều đã được tập hợp thành một Python package.
+Bài viết chỉ ra rằng thuật toán tiên tiến nhất lâm thời TreeSHAP~\citep{lundbergshap}, có độ bias cao khi các biến số ban đầu phụ thuộc lẫn nhau. Vì thế, họ đã xây dựng một phép tính xấp xỉ SV chính xác hơn dựa trên lý thuyết xác suất thống kê.
+Hơn nữa, khi áp dụng TReeSHAP đối với biến phân loại , bài viết chỉ ra rằng việc TReeSHAP xấp xỉ SV bằng phương pháp lấy tổng SV của các biến phân loại sau chuyển mã là sai trái và dẫn tới nhưng phân tích bịa đặt. Thay vào đó , những phép xấp xỉ của nhóm đã đem lại sự xấp xỉ chính xác và giảm thiểu bia. Những đóng góp đều đã được tập hợp thành một python package.
 
 \subsection{Report structure outline}
 Báo cáo này được cấu trúc thành sáu chương. Chương I giới thiệu về giá trị Shapley Values và cấu trúc tổng quan. Chương II trình bày các công trình liên quan trong lĩnh vực XAI và tính toán SV. Chương III cung cấp kiến thức nền tảng về Cây quyết định và Shapley Values. Chương IV đi sâu vào phương pháp luận được đề xuất trong bài báo. Chương V phân tích các thí nghiệm và kết quả đã thực hiện. Cuối cùng, Chương VI tổng kết các kết quả chính, thảo luận về các hạn chế và đề xuất hướng nghiên cứu trong tương lai.
@@ -183,7 +183,7 @@ Các phương pháp diễn giải mô hình thường được chia thành hai l
 Do đó, các phương pháp giải thích cục bộ đã ra đời và thu hút nhiều sự chú ý. Một số phương pháp nền tảng và phổ biến bao gồm:
 \begin{itemize}
     \item \textbf{Partial Dependence Plot (PDP)}: Trực quan hóa ảnh hưởng trung bình của một hoặc hai biến lên kết quả dự đoán của mô hình~\citep{Friedman2001}.
-    \item \textbf{Individual Conditional Expectation (ICE)}: Là một phiên bản chi tiết hơn của PDP, hiển thị đường dự đoán cho từng quan sát riêng lẻ khi một biến thay đổi, giúp phát hiện các tương tác không đồng nhất~\citep{goldstein2014peeking}.
+    \item \textbf{Individual Conditional Expectation (ICE)}: Là một phiên bản chi tiết hơn của PDP, hiển thị đường dự đoán cho từng quan sát riêng lẻ khi một biến thay đổi~\citep{goldstein2014peeking}.
     \item \textbf{Local Surrogate (LIME)}: Là một phương pháp độc lập với mô hình (model-agnostic), hoạt động bằng cách xây dựng một mô hình đơn giản (ví dụ: hồi quy tuyến tính) để xấp xỉ và giải thích hành vi của mô hình hộp đen phức tạp tại một vùng lân cận của dự đoán cần giải thích~\citep{ribeiro2016why}.
 \end{itemize}
 
@@ -223,7 +223,8 @@ Cây quyết định là một kiểu mô hình dự báo (predictive model), ng
 
 \subsection{Biến phân loại (categorical variables)}
 Hay còn gọi là biến định tính (qualitative variables). Trong AI, ta có hai nhóm chính là biến định tính và biến định lượng (quantitative variables). Biến định tính có giá trị thuộc một tập hợp, ví dụ màu sắc $\in$ \{đen, nâu, đỏ, cam, vàng, lục, lam, tím, xám, trắng, hoàng kim, bạc\}, còn biến định lượng thì sẽ biễu diễn được ở dạng một số cụ thể có thể áp dụng các toán tử cơ bản được.
-
+\subsection{ phân phối chuẩn}
+Phân phối chuẩn (Tiếng Anh: normal distribution) còn gọi là phân phối Gauss hay (Hình chuông Gauss), là một phân phối xác suất cực kì quan trọng trong nhiều lĩnh vực. Nó là họ phân phối có dạng tổng quát giống nhau, chỉ khác tham số vị trí (giá trị trung bình μ) và tỉ lệ (phương sai $\sigma^2$). Thường được kí hiệu X ∼ N ( μ , σ ) 
 \subsection{Giá Trị Shapley}
 Trong lí thuyết trò chơi, giá trị Shapley là một giải pháp phân phối cả lợi nhuận và chi phí một cách công bằng cho nhiều người chơi~\citep{Shapley1953}. Dù giá trị Shapley không hoàn hảo, nó đã được chứng minh là một cách tiếp cận khá công bằng.
 
@@ -553,7 +554,8 @@ P\big(L_m \mid X_{S' \cup i} \in L_m^{S' \cup i} \big)
 Theo nhóm nghiên cứu, việc tính Shapley Values cho $p$ biến với $M$ lá cây, lá cây có số lượng biến $|S_m|$ nhỏ hơn $D$, là độ sâu tối đa của bất kỳ
 cây nào có độ phức tạp tính toán là $O(p \times M \times 2^D)$
 trong các trường hợp xấu nhất. Thêm vào đó, thuật toán có tính tuyến tính theo số lượng quan sát. Tuy nhiên, độ phức tạp vẫn cao hơn so với Tree
-SHAP ~\citep{lundberg2020local2global}, với độ phức tạp $O(M \times D^2)$. Dưới cây là mô tả thuật toán Multi-Games:
+SHAP , với độ phức tạp $O(M \times D^2)$. Dưới cây là mô tả thuật toán Multi-Games:
+
 \begin{algorithm}[H]
 \caption{Multi-Games Algorithm}
 \KwIn{$x$, $f(x) = \sum_{m=0}^{M} f_m \mathbf{1}_{L_m}(x)$}
@@ -569,23 +571,22 @@ $\phi \gets \text{zeros}(p)$\;
         }
         \For{$S \subseteq S_m$}{
             $\phi[i] \gets \phi[i] + 
-            \Bigg( 
+            \left( 
                 \binom{p-1}{|S|}^{-1} + 
-                \sum_{k=1}^{p - |S_m|} \binom{p-|S_m|}{k} 
-                \binom{p-1}{k+|S|}^{-1} 
-            \Bigg)\\
+                \sum_{k=1}^{p - |S_m|} \binom{p-1}{k+|S|}^{-1} 
+            \right)
             \times 
-            \Bigg(
+            \left(
                 \mathbf{1}_{L_m^{S \cup i}}(x_{S \cup i}) \frac{N(L_m)}{N(L_m^{S \cup i})} 
                 - \mathbf{1}_{L_m^S}(x_S) \frac{N(L_m)}{N(L_m^S)} 
-            \Bigg)$\;
+            \right)$\;
         }
     }
 }
 
-\Return{$\phi$}\;
-
+\Return{$\phi$}
 \end{algorithm}
+
 \section{Thực nghiệm và Phân tích kết quả}
 
 Trong phần này, nhóm nghiên cứu tiến hành đánh giá mức độ chính xác và đáng tin cậy của các bộ ược lượng giá trị Shapley (Shapley Values - SV) áp dụng cho mô hình cây quyết định, đặc biệt tập trung vào các trường hợp khi các đặc trưng có tương quan hoặc xuất hiện các biến rời rạc/biến phân loại. Để làm rõ sự khác biệt, tác giả chia quá trình đánh giá thành hai thí nghiệm riêng biệt.
@@ -706,6 +707,7 @@ Kết quả này có thể giải thích bằng cách xem xét giả định c�
 
 \begin{adjustwidth}{0.0em}{0cm}
 Hơn nữa, nhóm nghiên cứu tiến hành so sánh thời gian tính toán giá trị Shapley (SV) bằng Leaf và TreeSHAP trên ba bộ dữ liệu có đặc trưng khác nhau: Boston ($n = 506, p = 13$), Adults ($n = 32561$, $p = 12$) và một mô hình tuyến tính giả lập ($n = 10000$, $p = 500$), trong đó $n$ là số quan sát và $p$ là số biến. Nhóm nghiên cứu huấn luyện XGBoost với các tham số mặc định trên các bộ dữ liệu này và tính SV cho 1000 quan sát của Adults và mô hình tuyến tính, cũng như 506 quan sát của Boston.  \\
+
 \end{adjustwidth}
 
 \begin{adjustwidth}{0.0em}{0cm}
