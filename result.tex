@@ -1,0 +1,426 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- PACKAGE LOADING ---
+% Font and Language
+\usepackage{fontspec} % For Unicode font support (XeLaTeX/LuaLaTeX)
+\usepackage{polyglossia} % For multilingual support
+\setmainlanguage{vietnamese}
+\setmainfont{Arial} % A standard, widely available font
+
+% Page Layout and Headers
+\usepackage[left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{fancyhdr}
+
+% Graphics and TikZ
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, trees, calc, shapes.geometric}
+
+% Math and Symbols
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm} % For theorem/proposition environments
+\usepackage{cancel}
+
+% Tables and Lists
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{changepage} % For adjustwidth environment
+\usepackage{array}
+\usepackage{enumitem}
+
+% Verbatim and Code
+\usepackage{fancyvrb} % For Verbatim environments
+\usepackage{fvextra}  % To allow Verbatim inside other environments
+
+% Utilities
+\usepackage{float}
+\usepackage{titlesec}
+\usepackage{natbib} % For handling citations like \citep
+
+% Hyperlinks (should generally be last)
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={Lab03: Học máy},
+    pdfauthor={Nguyễn Thành Luân},
+}
+
+
+% --- CUSTOM CONFIGURATIONS ---
+% Header and Footer Style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\nouppercase{\leftmark}}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Section Numbering and Formatting
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{subsection}.\arabic{subsubsection}}
+\titleformat{\subsubsection}[runin]
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+  [\vspace{0.5em}]
+\titlespacing*{\subsubsection}{2em}{1ex plus .2ex minus .2ex}{0.5ex}
+
+% --- ORIGINAL PAPER ---
+
+
+
+% My import
+%\usepackage{algorithmicx}
+% \usepackage{algorithm2e}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{subfiles}
+\usepackage{dsfont}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\theoremstyle{plain}
+\newtheorem{assumption}{Assumption}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{proposition}
+\newtheorem{proposition}{Proposition}[section]
+\theoremstyle{lemma}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{prop}{\protect\propositionname}[section]
+\newtheorem{definition}{Definition}[section]
+\newenvironment{sproof}{%
+\renewcommand{\proofname}{Sketch of the Proof}\proof}{\endproof}
+% \newcommand{\defeq}{\overset{\mathrm{def}}{=}}
+% \newcommand{\as}{\underset{n \to +\infty}{\overset{a.s}{\longrightarrow}}}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+\renewcommand{\qedsymbol}{}
+
+\newcommand\XS{\boldsymbol{X}_S}
+\newcommand\X{\boldsymbol{X}}
+\newcommand\xs{\boldsymbol{x}_S}
+\newcommand\XSb{\boldsymbol{X}_{\bar{S}}}
+\newcommand\xsb{\boldsymbol{x}_{\bar{S}}}
+\newcommand\x{\boldsymbol{x}}
+\newcommand{\labs}{\left\lvert}
+\newcommand{\rabs}{\right\rvert}
+\newcommand{\defeq}{\overset{\mathrm{def}}{=}}
+\newcommand{\as}{\underset{n \to +\infty}{\overset{a.s}{\longrightarrow}}}
+
+\begin{document}
+
+% --- TITLE PAGE ---
+\begin{titlepage}
+    \centering
+    \fontsize{16pt}{18pt}\selectfont
+    \textbf{TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN} \\
+    \textbf{KHOA CÔNG NGHỆ THÔNG TIN} \\[1cm]
+
+    \includegraphics[width=0.35\textwidth]{logohcmus.png} \\[1cm]
+
+    {\fontsize{24pt}{26pt}\selectfont \textbf{Lab03: Học máy}} \\[1cm]
+
+    \vspace{0.5cm}
+
+    \begin{center}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{@{}ll}
+                \textbf{Môn: } & \textbf{Cơ sở trí tuệ nhân tạo} \\[13pt]
+                
+                \textbf{Giáo viên:}  & \textbf{Lê Nhựt Nam}\\ [13pt]  
+                                     & \textbf{Võ Nhựt Tân} \\[13pt]   
+                                     
+                \textbf{Nhóm sinh viên:} & \textbf{Nguyễn Thành Luân - 23127296} \\[13pt]  
+                                         & \textbf{Trần Quang Phúc - 23127302} \\[13pt]  
+                                         & \textbf{Nguyễn Thanh Tiến - 23127539} \\[13pt]  
+                                         & \textbf{Vũ Văn Vũ - 23127543} \\
+        \end{tabular}
+    \end{center}
+
+    \vfill
+
+    {\Large \textbf{TP.Hồ Chí Minh, 27/08/2025}}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Tổng quan}
+
+Với thí nghiệm dựa trên biến liên tục, nhà nghiên cứu sử dụng một bộ dữ liệu tổng hợp được tạo ra theo mô hình hồi quy tuyến tính với $n = 10000$ mẫu và $d = 5$ đặc trưng (features). 
+
+\begin{adjustwidth}{0.0em}{0cm}
+Các đặc trưng $X = (X_0, X_1, ..., X_4)$ được sinh từ phân phối Gaussian đa biến với vector kỳ vọng $\mu = 0$ và ma trận hiệp phương sai 
+\end{adjustwidth}
+\[
+\Sigma = 
+\begin{bmatrix}
+1 & p & \dots & p \\
+p & 1 & \dots & p \\
+\vdots & \vdots & \ddots & \vdots \\
+p & p & \dots & 1
+\end{bmatrix}, \quad \text{với } p = 0.7
+\]
+ma trận này được xác định theo công thức hiệp phương sai xác định để tạo ra mức độ tương quan giữa các đặc trưng. 
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Bộ dữ liệu này được sinh ra sử dụng class 
+\texttt{ExperimentsLinear}, trong đó:  
+\end{adjustwidth}
+
+\begin{itemize}
+    \item Mỗi mẫu $X_i$ được sinh từ phân phối Gaussian đa biến với mean và covariance như trên.
+    
+    \item Biến mục tiêu $Y$ được tính theo công thức
+    \[
+    Y = B^t X,
+    \]
+    trong đó $B$ là vector hệ số hồi quy (coefficients) được chọn sao cho một số feature có ảnh hưởng lên biến mục tiêu.
+
+    \item Vì phân phối của $X$ đã biết, nhàn nghiên cứu có thể tính toán giá trị Shapley chính xác của hàm $f$ sử dụng bộ ước lượng Monte Carlo (Monte Carlo estimator) và phục vụ so sánh của các thí nghiệm sau
+\end{itemize}
+
+
+\section{Kết quả thí nghiệm với biến liên tục}
+\subsection{Phân tích 1000 mẫu đầu tiên}
+Trong phần này, nhà nghiên cứu tiến hành so sánh hai phương pháp ước lượng Shapley Value, bao gồm TreeSHAP và Leaf estimator, trên 1000 mẫu đầu tiên của bộ dữ liệu trên.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq1.png}
+    \caption{R-MAE trên 1000 quan sát mới được lấy mẫu từ mô hình tổng hợp, p=5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq2.png}
+    \caption{R-MAE trên 1000 quan sát mới được lấy mẫu từ mô hình tổng hợp, p=5}
+\end{figure}
+
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả thí nghiệm trên 1000 mẫu đầu tiên cho thấy:
+\end{adjustwidth}
+\begin{itemize}
+    \item Sai số trung bình tuyệt đối tương đối (R-MAE) của TreeSHAP là $3.36$.
+    \item Sai số trung bình tuyệt đối tương đối (R-MAE) của Leaf estimator là $1.06$.
+\end{itemize}
+
+\begin{adjustwidth}{0.0em}{0cm}
+Điều này cho thấy, trên tập mẫu này, Leaf estimator đạt độ chính xác cao hơn TreeSHAP so với giá trị Shapley chuẩn Monte Carlo.
+\end{adjustwidth}
+
+
+
+\subsection{Phân tích dựa trên mẫu bất thường}
+
+Trong thí nghiệm này, nhà nghiên cứu tập trung vào các mẫu bất thường (anomaly samples) được phát hiện từ tập dữ liệu gốc bằng thuật toán \textit{Isolation Forest}.  
+
+\begin{itemize}
+    \item Các mẫu bất thường là những quan sát khác biệt rõ rệt so với phần lớn dữ liệu, dễ bị "cô lập" khi phân chia ngẫu nhiên theo các đặc trưng.
+    \item Những mẫu này được đánh dấu bằng giá trị $-1$ từ mô hình Isolation Forest.
+\end{itemize}
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Mục đích của việc phân tích riêng các mẫu bất thường là so sánh độ chính xác của các phương pháp ước lượng Shapley Value, bao gồm Leaf estimator và TreeSHAP, trên các điểm dữ liệu ít phổ biến và có ảnh hưởng lớn đến quyết định của mô hình.
+\end{adjustwidth}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq4.png}
+    \caption{R-MAE trên 1000 quan sát mới được lấy mẫu bất thường từ mô hình tổng hợp, p=5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq3.png}
+    \caption{R-MAE trên 1000 quan sát mới được lấy mẫu bất thường từ mô hình tổng hợp, p=5}
+\end{figure}
+
+Sau khi tính toán R-MAE trên các mẫu bất thường, có thể thấy kết quả:
+
+\begin{itemize}
+    \item Leaf estimator: $\text{R-MAE} = 1.66$
+    \item TreeSHAP: $\text{R-MAE} = 5.23$
+\end{itemize}
+
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Hơn nữa, thí nghiệm thu được các chỉ số hiệu suất đánh giá:
+\end{adjustwidth}
+\begin{itemize}
+    \item TreeSHAP:
+        \begin{itemize}
+            \item True Positive Rate (TPR): 73.74\% 
+            \item False Discovery Error (FDE): 26.26\%
+        \end{itemize}
+    \item Leaf estimator:
+        \begin{itemize}
+            \item TPR: 78.03\% 
+            \item FDE: 21.97\%
+        \end{itemize}
+\end{itemize}
+
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả thí nghiệm cho thấy trên các mẫu bất thường, phương pháp Leaf estimator ước lượng Shapley Value chính xác hơn TreeSHAP. 
+Cụ thể, Leaf estimator có TPR cao hơn và FDE thấp hơn so với TreeSHAP, 
+nghĩa là Leaf estimator hoạt động tốt hơn trong việc phát hiện các đặc trưng quan trọng, 
+đặc biệt trên các mẫu dữ liệu ít phổ biến hoặc bất thường.
+\end{adjustwidth}
+
+
+\subsection{Phân tích dựa trên mẫu bình thường}
+
+Trong thí nghiệm này, nhà nghiên cứu tập trung vào các mẫu bình thường từ tập dữ liệu tổng hợp. Các mẫu bình thường được đánh dấu bằng giá trị $+1$ từ mô hình \textit{Isolation Forest} và đại diện cho phần lớn dữ liệu.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq5.png}
+    \caption{R-MAE trên 1000 quan sát được lấy mẫu bình thường từ mô hình tổng hợp, p=5}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq6.png}
+    \caption{R-MAE trên 1000 quan sát được lấy mẫu bình thường từ mô hình tổng hợp, p=5}
+\end{figure}
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Từ kết quả trên cho thấy R-MAE trên các mẫu bình thường là:
+\begin{itemize}
+    \item TreeSHAP: $\text{R-MAE} = 3.08$
+    \item Leaf estimator: $\text{R-MAE} = 0.97$
+\end{itemize}
+
+Các chỉ số hiệu suất khác cũng cho thấy Leaf estimator vượt trội so với TreeSHAP:
+\begin{itemize}
+    \item TPR: Leaf = 86.79\%, TreeSHAP = 69.05\%
+    \item FDE: Leaf = 13.21\%, TreeSHAP = 30.95\%
+\end{itemize}
+
+\end{adjustwidth}
+\begin{adjustwidth}{0.0em}{0cm}
+
+Điều này chứng tỏ Leaf estimator ước lượng Shapley Value chính xác hơn TreeSHAP trên cả các mẫu phổ biến và đại diện cho phần lớn dữ liệu, với TPR cao hơn và FDE thấp hơn.
+\end{adjustwidth}
+
+
+\section{Kết quả thí nghiệm với biến rời rạc}
+Trong phần này, nhà nghiên cứu thực hiện thí nghiệm trên dữ liệu liên tục sinh từ ExperimentsLinear với các đặc trưng như đã đề cập ở trên với $p=3$. Trước khi tính Shapley Value, dữ liệu liên tục được rời rạc hóa.
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Thí nghiệm so sánh ba phương pháp ước lượng Shapley Value:
+\end{adjustwidth}
+
+
+\begin{itemize}
+    \item \textbf{Discrete estimator: } sử dụng thông tin phân phối từ dữ liệu train rời rạc để ước lượng Shapley Value cho các mẫu.
+    \item \textbf{Leaf estimator: } dựa trực tiếp vào cấu trúc lá của cây quyết định trên dữ liệu rời rạc để tính Shapley Value.
+    \item \textbf{TreeSHAP: } tính toán giá trị Shapley chính xác dựa trên cấu trúc cây với thuật toán TreeSHAP, không phụ thuộc vào việc rời rạc hóa.
+\end{itemize}
+
+\subsection{Phân tích 500 mẫu mới được sinh từ ExperimentsLinear}
+500 mẫu đầu tiên được chọn từ một tập dữ liệu lớn gồm 100000 mẫu sinh từ ExperimentsLinear. Các mẫu này được sử dụng để ước lượng Shapley Value bằng các phương pháp khác nhau như Discrete estimator, leaf estimator và TreeSHAP.
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả R-MAE và các chỉ số TPR, FDE cho thấy sự khác biệt về độ chính xác giữa các phương pháp:  
+\end{adjustwidth}
+
+
+\begin{itemize}
+    \item \textbf{TreeSHAP:} R-MAE = 2.93, TPR = 55.0, FDE = 45.0
+    \item \textbf{Discrete estimator:} R-MAE = 0.21, TPR = 94.8
+    \item \textbf{Leaf estimator:} R-MAE = 0.95, TPR = 75.4
+\end{itemize}
+
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Nhìn chung, Discrete estimator cho kết quả R-MAE thấp nhất và TPR cao nhất, trong khi TreeSHAP có R-MAE cao hơn. Leaf estimator nằm giữa hai phương pháp trên.  
+\end{adjustwidth}
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq7.png}
+    \caption{R-MAE trên 500 mẫu mới được sinh từ ExperimentsLinear.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq8.png}
+    \caption{R-MAE trên 500 mẫu mới được sinh từ ExperimentsLinear.}
+\end{figure}
+
+\subsection{Phân tích dựa trên mẫu bất thường}
+Nhà nghiên cứu vẫn sử dụng bộ dữ liệu mẫu bất thường với thuật toán đã đề cập ở trên 
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả cho thấy sự khác biệt rõ rệt về R-MAE và các chỉ số TPR/FDE giữa các phương pháp:
+\end{adjustwidth}
+
+\begin{itemize}
+    \item \textbf{TreeSHAP:} R-MAE = 4.27, TPR = 0.0, FDE = 100.0
+    \item \textbf{Discrete estimator:} R-MAE = 0.22, TPR = 100.0, FDE = 0.0
+    \item \textbf{Leaf estimator:} R-MAE = 0.83, TPR = 100.0, FDE = 0.0
+\end{itemize}
+
+
+\begin{adjustwidth}{0.0em}{0cm}
+Nhìn chung, Discrete estimator và Leaf estimator đều nhận diện các mẫu bất thường tốt (TPR cao, FDE thấp), trong khi TreeSHAP cho R-MAE cao và FDE gần như tối đa, phản ánh sự khó khăn của phương pháp này khi áp dụng trên các mẫu bất thường.
+\end{adjustwidth}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq9.png}
+    \caption{R-MAE trên mẫu bất thường .}
+\end{figure}
+
+\subsection{Phân tích dựa trên mẫu bình thường}
+
+Trong phần này, nhà nghiên cứu sử dụng các mẫu được xác định là bình thường từ 500 mẫu đã chọn.
+\begin{adjustwidth}{0.0em}{0cm}
+Kết quả R-MAE và các chỉ số TPR/FDE trên mẫu bình thường như sau:
+\end{adjustwidth}
+
+\begin{itemize}
+    \item \textbf{TreeSHAP:} R-MAE = 2.93, TPR = 55.1, FDE = 44.9
+    \item \textbf{Discrete estimator:} R-MAE = 0.21, TPR = 94.8
+    \item \textbf{Leaf estimator:} R-MAE = 0.95, TPR = 75.4
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq10.png}
+    \caption{R-MAE trên mẫu bình thường thường .}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{kq11.png}
+    \caption{R-MAE trên mẫu bình thường thường .}
+\end{figure}
+
+\begin{adjustwidth}{0.0em}{0cm}
+Nhìn chung, Discrete estimator cho R-MAE thấp nhất và TPR cao nhất trên mẫu bình thường, Leaf estimator có kết quả trung gian, trong khi TreeSHAP cho R-MAE cao hơn và FDE lớn hơn, phản ánh mức độ hiệu quả khác nhau của các phương pháp khi áp dụng trên dữ liệu bình thường.
+\end{adjustwidth}
+
+
+
+\end{document}
