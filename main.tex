@@ -734,6 +734,33 @@ Mặc dù có sự quan tâm ngày càng lớn đến lĩnh vực AI đáng tin 
 
 Nhóm nghiên cứu cũng cho rằng chất lượng ước lượng không phải là hạn chế duy nhất của SV. Thực tế, giải thích bằng SV không phải là giải thích cục bộ (local), mà vẫn mang tính toàn cục (global), ngay cả trong mô hình tuyến tính đơn giản.
 
+\textbf{Mệnh đề 5.1.} 
+Giả sử ta có $X \in \mathbb{R}^p$, với $X \sim \mathcal{N}(0, I_p)$ là các đặc trưng Gaussian độc lập, 
+và một mô hình tuyến tính $f$ được định nghĩa như sau:
+
+\[
+f(X) = (a_1X_1 + a_2X_2)\,\mathbf{1}_{\{X_5 \le 0\}} + (a_3X_3 + a_4X_4)\,\mathbf{1}_{\{X_5 > 0\}}.
+\]
+
+Ngay cả khi ta chọn một quan sát $x$ sao cho $x_5 \le 0$ và mô hình chỉ sử dụng $X_1, X_2$, 
+thì giá trị Shapley (SV) của $\phi_{X_3}, \phi_{X_4}$ không nhất thiết bằng $0$. 
+
+Thật vậy, với mọi $i \in \{3, 4\}$, ta có:
+
+\[
+\phi_{X_i} = \frac{1}{p}\,\mathbb{P}(X_5 > 0) 
+\sum_{S \subseteq [p]\setminus \{i,5\}} 
+\frac{(p-1)}{|S|}\,\Big( a_i(x_i - \mathbb{E}[X_i]) \Big).
+\]
+
+Do đó có thể viết gọn thành:
+
+\[
+\phi_{X_i} = K \cdot \Big(a_i(x_i - \mathbb{E}[X_i])\Big),
+\]
+
+trong đó $K$ là một hằng số.
+
 SV không thực sự đo lường mang tính cục bộ, mà thay vào đó vẫn chịu ảnh hưởng toàn cục. Nguyên nhân là khi tính SV cho $X_1$ hoặc $X_2$, ta cũng xem xét các tập con $S$ không chứa $X_5$. Quá trình lấy trung bình và thay đổi dấu của $X_5$ đã vô tình đưa cả mô hình tuyến tính còn lại (không áp dụng cho quan sát hiện tại) vào. 
 
 Phát hiện này đặt ra những thách thức lớn trong việc diễn giải SV và cho thấy các hạn chế thường bị bỏ qua trong thực tiễn do thiếu sự chính xác và hiểu biết về Shapley Values.
